@@ -1,2 +1,2 @@
 # adityapanchal
-Personal portfolio, blogs, though gathering site
+Personal portfolio, blogs, thought gathering site.
