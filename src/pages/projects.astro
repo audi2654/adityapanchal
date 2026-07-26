@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { projects } from '../config';
+import { internalUrl } from '../utils/url';
+---
+
+<BaseLayout title="Projects" description="A small collection of things Aditya is making and maintaining.">
+  <header class="page-header">
+    <p class="eyebrow">Projects</p>
+    <h1>Things I’m tending.</h1>
+    <p>Small systems, useful tools, and ongoing experiments.</p>
+  </header>
+
+  <ul class="project-list">
+    {projects.map((project) => (
+      <li>
+        <article>
+          <div>
+            <h2><a href={project.url.startsWith('/') ? internalUrl(project.url) : project.url}>{project.name}</a></h2>
+            <p>{project.description}</p>
+          </div>
+          <p class="project-list__meta"><span>{project.year}</span><span>{project.status}</span></p>
+        </article>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>

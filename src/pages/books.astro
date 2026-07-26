@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { books } from '../config';
+---
+
+<BaseLayout title="Books" description="Books that have shaped Aditya’s thinking.">
+  <header class="page-header">
+    <p class="eyebrow">Books</p>
+    <h1>Books that earned a reread.</h1>
+    <p>Not a canon—just a personal shelf of useful companions.</p>
+  </header>
+  <ol class="recommendation-list">
+    {books.map((book) => (
+      <li>
+        <article>
+          <h2><cite>{book.title}</cite></h2>
+          <p class="recommendation-list__byline">by {book.author}</p>
+          <p>{book.note}</p>
+        </article>
+      </li>
+    ))}
+  </ol>
+</BaseLayout>

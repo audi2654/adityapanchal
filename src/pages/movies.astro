@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { movies } from '../config';
+---
+
+<BaseLayout title="Movies" description="Films that have stayed with Aditya.">
+  <header class="page-header">
+    <p class="eyebrow">Movies</p>
+    <h1>Films that linger.</h1>
+    <p>Movies with a particular atmosphere, question, or way of noticing.</p>
+  </header>
+  <ol class="recommendation-list">
+    {movies.map((movie) => (
+      <li>
+        <article>
+          <h2><cite>{movie.title}</cite></h2>
+          <p class="recommendation-list__byline">{movie.director}, {movie.year}</p>
+          <p>{movie.note}</p>
+        </article>
+      </li>
+    ))}
+  </ol>
+</BaseLayout>

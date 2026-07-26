@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WritingList from '../../components/WritingList.astro';
+import { getPublishedWriting, getTaxonomy, toSlug } from '../../utils/writing';
+
+export async function getStaticPaths() {
+  const entries = await getPublishedWriting();
+  return getTaxonomy(entries, 'category').map((category) => ({ params: { category: toSlug(category) }, props: { category, entries } }));
+}
+
+const { category, entries } = Astro.props;
+const filtered = entries.filter((entry) => entry.data.category === category);
+---
+
+<BaseLayout title={category} description={`Writing in ${category}.`}>
+  <header class="page-header page-header--compact">
+    <p class="eyebrow">Category</p>
+    <h1>{category}</h1>
+    <p>{filtered.length} {filtered.length === 1 ? 'piece' : 'pieces'} of writing.</p>
+  </header>
+  <WritingList entries={filtered} />
+</BaseLayout>

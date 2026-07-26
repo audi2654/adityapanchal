@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../config';
+import { internalUrl } from '../utils/url';
+---
+
+<BaseLayout title="About" description="About Aditya Panchal and this website.">
+  <article class="standalone prose">
+    <header class="page-header">
+      <p class="eyebrow">About</p>
+      <h1>A place for considered work.</h1>
+    </header>
+    <p>I’m Aditya Panchal. This is my personal website: a durable home for writing, projects, and useful lists.</p>
+    <p>I care about software that feels calm and understandable, writing that earns its reader’s time, and systems that remain useful after the novelty has worn off.</p>
+    <p>The site is deliberately small. It uses static HTML wherever possible, has no analytics or tracking, and respects the reading environment you bring to it.</p>
+    <h2>Find me</h2>
+    <ul>
+      <li><a href={site.github} rel="me external">GitHub</a></li>
+      <li><a href={internalUrl('/rss.xml')}>RSS feed</a></li>
+    </ul>
+  </article>
+</BaseLayout>

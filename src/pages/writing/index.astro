@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WritingList from '../../components/WritingList.astro';
+import { getPublishedWriting, getTaxonomy, toSlug } from '../../utils/writing';
+import { internalUrl } from '../../utils/url';
+
+const writing = await getPublishedWriting();
+const tags = getTaxonomy(writing, 'tags');
+const categories = getTaxonomy(writing, 'category');
+---
+
+<BaseLayout title="Writing" description="Essays and notes on software, learning, and intentional work.">
+  <header class="page-header">
+    <p class="eyebrow">Writing</p>
+    <h1>Notes worth returning to.</h1>
+    <p>A growing collection of essays about making useful things and living with more attention.</p>
+  </header>
+
+  <WritingList entries={writing} />
+
+  <section class="taxonomy" aria-labelledby="browse-heading">
+    <h2 id="browse-heading">Browse the archive</h2>
+    <div class="taxonomy__group">
+      <h3>Categories</h3>
+      <ul>
+        {categories.map((category) => <li><a href={internalUrl(`/categories/${toSlug(category)}/`)}>{category}</a></li>)}
+      </ul>
+    </div>
+    <div class="taxonomy__group">
+      <h3>Tags</h3>
+      <ul>
+        {tags.map((tag) => <li><a href={internalUrl(`/tags/${toSlug(tag)}/`)}>{tag}</a></li>)}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>

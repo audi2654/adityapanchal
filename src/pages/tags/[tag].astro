@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WritingList from '../../components/WritingList.astro';
+import { getPublishedWriting, getTaxonomy, toSlug } from '../../utils/writing';
+
+export async function getStaticPaths() {
+  const entries = await getPublishedWriting();
+  return getTaxonomy(entries, 'tags').map((tag) => ({ params: { tag: toSlug(tag) }, props: { tag, entries } }));
+}
+
+const { tag, entries } = Astro.props;
+const filtered = entries.filter((entry) => entry.data.tags.includes(tag));
+---
+
+<BaseLayout title={`Tagged: ${tag}`} description={`Writing tagged ${tag}.`}>
+  <header class="page-header page-header--compact">
+    <p class="eyebrow">Tag</p>
+    <h1>{tag}</h1>
+    <p>{filtered.length} {filtered.length === 1 ? 'piece' : 'pieces'} of writing.</p>
+  </header>
+  <WritingList entries={filtered} />
+</BaseLayout>

@@ -1,0 +1,18 @@
+---
+import { formatDate, toIsoDate } from '../utils/date';
+
+interface Props {
+  published: Date;
+  updated?: Date;
+  readingTime: number;
+}
+
+const { published, updated, readingTime } = Astro.props;
+---
+
+<p class="article-meta">
+  <time datetime={toIsoDate(published)}>{formatDate(published)}</time>
+  <span aria-hidden="true">·</span>
+  <span>{readingTime} min read</span>
+  {updated && <><span aria-hidden="true">·</span><span>Updated <time datetime={toIsoDate(updated)}>{formatDate(updated)}</time></span></>}
+</p>

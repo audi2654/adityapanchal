@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import WritingList from '../components/WritingList.astro';
+import { getPublishedWriting } from '../utils/writing';
+import { internalUrl } from '../utils/url';
+
+const writing = await getPublishedWriting();
+const featured = writing.filter((entry) => entry.data.featured).slice(0, 3);
+const latest = featured.length > 0 ? featured : writing.slice(0, 3);
+---
+
+<BaseLayout>
+  <section class="home-intro" aria-labelledby="intro-heading">
+    <p class="eyebrow">Personal notes</p>
+    <h1 id="intro-heading">Hello, I’m Aditya.</h1>
+    <p>I write to make my thinking more precise: about building software, learning patiently, and making room for the things that matter.</p>
+  </section>
+
+  <section class="home-section" aria-labelledby="recent-writing">
+    <div class="section-heading">
+      <h2 id="recent-writing">Recent writing</h2>
+      <a href={internalUrl('/writing/')}>All writing <span aria-hidden="true">→</span></a>
+    </div>
+    <WritingList entries={latest} />
+  </section>
+
+  <section class="home-section home-note" aria-labelledby="elsewhere-heading">
+    <h2 id="elsewhere-heading">Elsewhere in this small corner</h2>
+    <p>There are also <a href={internalUrl('/thoughts/')}>short thoughts</a>, a living <a href={internalUrl('/now/')}>now page</a>, and notes on <a href={internalUrl('/books/')}>books</a> and <a href={internalUrl('/movies/')}>films</a> that have stayed with me.</p>
+  </section>
+</BaseLayout>

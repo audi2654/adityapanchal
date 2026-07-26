@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const thoughts = [
+  ['27 July 2026', 'Good defaults are acts of generosity. They make the next right step easier for someone else.'],
+  ['18 July 2026', 'The shortest useful document is usually a decision, a reason, and a next action.'],
+  ['08 July 2026', 'A quiet morning is less about the absence of noise than the absence of urgency.'],
+  ['29 June 2026', 'When a task keeps expanding, name the smallest version that would still change something.']
+] as const;
+---
+
+<BaseLayout title="Thoughts" description="Short notes from Aditya’s notebook.">
+  <header class="page-header">
+    <p class="eyebrow">Thoughts</p>
+    <h1>Small notes.</h1>
+    <p>Ideas too brief for an essay, kept here before they disappear.</p>
+  </header>
+  <ol class="thought-list">
+    {thoughts.map(([date, thought]) => (
+      <li>
+        <article>
+          <time>{date}</time>
+          <p>{thought}</p>
+        </article>
+      </li>
+    ))}
+  </ol>
+</BaseLayout>

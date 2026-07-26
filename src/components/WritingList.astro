@@ -1,0 +1,35 @@
+---
+import type { WritingEntry } from '../utils/writing';
+import { getReadingTime } from '../utils/reading-time';
+import { formatDate, toIsoDate } from '../utils/date';
+import { internalUrl } from '../utils/url';
+
+interface Props {
+  entries: WritingEntry[];
+  showDescription?: boolean;
+}
+
+const { entries, showDescription = true } = Astro.props;
+---
+
+<ol class="writing-list">
+  {entries.map((entry) => {
+    const readingTime = getReadingTime(entry.body);
+    return (
+      <li>
+        <article>
+          <div class="writing-list__heading">
+            <h2><a href={internalUrl(`/writing/${entry.id}/`)}>{entry.data.title}</a></h2>
+            <time datetime={toIsoDate(entry.data.published)}>{formatDate(entry.data.published)}</time>
+          </div>
+          {showDescription && <p>{entry.data.description}</p>}
+          <p class="writing-list__meta">
+            <a href={internalUrl(`/categories/${entry.data.category.toLowerCase().replaceAll(' ', '-')}/`)}>{entry.data.category}</a>
+            <span aria-hidden="true">·</span>
+            <span>{readingTime} min read</span>
+          </p>
+        </article>
+      </li>
+    );
+  })}
+</ol>

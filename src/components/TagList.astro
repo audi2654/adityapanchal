@@ -1,0 +1,16 @@
+---
+import { toSlug } from '../utils/writing';
+import { internalUrl } from '../utils/url';
+
+interface Props {
+  tags: string[];
+}
+
+const { tags } = Astro.props;
+---
+
+{tags.length > 0 && (
+  <ul class="tag-list" aria-label="Tags">
+    {tags.map((tag) => <li><a href={internalUrl(`/tags/${toSlug(tag)}/`)}>{tag}</a></li>)}
+  </ul>
+)}
