@@ -11,16 +11,18 @@ interface Props {
   type?: 'website' | 'article';
   publishedTime?: Date;
   modifiedTime?: Date;
+  /* Unlisted pages: no crawling, no sitemap entry, no link from the site. */
+  noindex?: boolean;
 }
 
-const { title, description, image, type, publishedTime, modifiedTime } = Astro.props;
+const { title, description, image, type, publishedTime, modifiedTime, noindex } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
 ---
 
 <!doctype html>
 <html lang="en">
   <head>
-    <SiteHead {title} {description} {canonical} {image} {type} {publishedTime} {modifiedTime} />
+    <SiteHead {title} {description} {canonical} {image} {type} {publishedTime} {modifiedTime} {noindex} />
     <slot name="head" />
   </head>
   <body>

@@ -16,7 +16,15 @@ export default defineConfig({
   base: process.env.BASE_PATH ?? (repositoryName && !isUserSite ? `/${repositoryName}` : '/'),
   output: 'static',
   trailingSlash: 'always',
-  integrations: [mdx(), sitemap()],
+  integrations: [
+    mdx(),
+    /*
+      Unlisted pages must never reach the sitemap — submitting a URL is an
+      invitation to crawl it. Keep this list in step with any page that sets
+      `noindex` on BaseLayout.
+    */
+    sitemap({ filter: (page) => !page.includes('/homelab/') })
+  ],
   markdown: {
     shikiConfig: {
       themes: {

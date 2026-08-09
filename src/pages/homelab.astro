@@ -1,0 +1,37 @@
+---
+/*
+  Unlisted jump-off point to the self-hosted Coolify dashboard on the VPS.
+
+  Deliberately not public:
+  - Not in `navigation`, not in `intersectionSections`, and linked from nowhere
+    on the site, so nothing can crawl its way here.
+  - `noindex` sets a restrictive robots meta tag, and the sitemap filter in
+    astro.config.mjs drops it, so search engines have no route in and no
+    permission to list it if they somehow find one.
+  - Kept out of robots.txt on purpose: that file is world-readable, so a
+    `Disallow` line would publish the path, and it would also stop crawlers
+    reading the noindex tag above. Silence is the stronger option.
+
+  This page is a signpost, not a secret. Anyone who guesses the URL sees the
+  server's address — the real protection is Coolify's own login.
+*/
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const dashboard = 'http://140.245.18.238';
+---
+
+<BaseLayout title="Homelab" description="Private jump-off point." noindex>
+  {/* Meta refresh, not a script: it works with JavaScript disabled. */}
+  <meta slot="head" http-equiv="refresh" content={`0; url=${dashboard}`} />
+
+  <header class="page-header">
+    <p class="eyebrow">Homelab</p>
+    <h1>Off to the dashboard.</h1>
+    <p>
+      Redirecting to the Coolify login on the VPS. If nothing happens, follow the
+      link below.
+    </p>
+  </header>
+
+  <p><a href={dashboard} rel="nofollow noreferrer">{dashboard}</a></p>
+</BaseLayout>

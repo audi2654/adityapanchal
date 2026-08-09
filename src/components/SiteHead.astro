@@ -10,6 +10,8 @@ interface Props {
   type?: 'website' | 'article';
   publishedTime?: Date;
   modifiedTime?: Date;
+  /* Keeps a page out of search results. Also exclude it from the sitemap in astro.config.mjs. */
+  noindex?: boolean;
 }
 
 const {
@@ -19,7 +21,8 @@ const {
   image,
   type = 'website',
   publishedTime,
-  modifiedTime
+  modifiedTime,
+  noindex = false
 } = Astro.props;
 const pageTitle = title ? `${title} · ${site.name}` : `${site.name} · ${site.description}`;
 const socialImage = image ?? new URL(internalUrl('/og.svg'), Astro.site ?? site.url);
@@ -31,7 +34,7 @@ const socialImage = image ?? new URL(internalUrl('/og.svg'), Astro.site ?? site.
 <meta name="theme-color" content="#171716" media="(prefers-color-scheme: dark)" />
 <meta name="description" content={description} />
 <meta name="author" content={site.author} />
-<meta name="robots" content="index, follow" />
+<meta name="robots" content={noindex ? 'noindex, nofollow, noarchive, nosnippet, noimageindex' : 'index, follow'} />
 <link rel="canonical" href={canonical?.toString()} />
 <link rel="alternate" type="application/rss+xml" title={`${site.name} — RSS`} href={internalUrl('/rss.xml')} />
 <link rel="sitemap" href={internalUrl('/sitemap-index.xml')} />

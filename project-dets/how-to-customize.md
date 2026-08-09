@@ -154,6 +154,23 @@ That array is the single source of truth — it drives both the Intersections hu
 <p class="eyebrow"><a href={internalUrl('/intersections/')}>Intersections</a> / Music</p>
 ```
 
+### An unlisted page, for your eyes only
+
+`/homelab/` is the working example — it redirects to the Coolify dashboard on your VPS and is meant to be reachable only by typing the URL. Copy [`src/pages/homelab.astro`](../src/pages/homelab.astro) if you want another.
+
+Three things keep such a page out of search results, and you need **all three**:
+
+1. Pass `noindex` to `BaseLayout`: `<BaseLayout title="Homelab" description="..." noindex>`.
+2. Add it to the sitemap filter in [`astro.config.mjs`](../astro.config.mjs) — a sitemap entry actively invites crawlers, so this one is easy to forget and important:
+   ```js
+   sitemap({ filter: (page) => !page.includes('/homelab/') })
+   ```
+3. Don't link to it. Not from `navigation`, not from any page. Links are how crawlers find things.
+
+**Do not add it to `robots.txt`.** That seems like the obvious move and it backfires twice: `robots.txt` is public, so a `Disallow` line hands out the exact URL to anyone who looks; and a crawler that obeys the disallow never loads the page, so it never sees the `noindex` and can still list the bare URL. Silence works better.
+
+**Understand what this is, though.** Unlisted is not private. This is a static site with no login — the page is public HTML to anyone who knows or guesses the path, and `/homelab/` names your server's IP. The real protection is Coolify's own login screen. If the server shouldn't be publicly reachable at all, that's a firewall or VPN decision on the VPS, not something a page here can fix.
+
 ---
 
 ## 4. Avoiding version problems
@@ -209,7 +226,7 @@ The published site is plain HTML, CSS, and images — **no framework runtime, no
 
 ## 5. What content types exist, and where each lives
 
-Seven kinds. The important split: **one is a real content collection; the rest are lists in code.**
+Eight kinds. The important split: **one is a real content collection; the rest are lists in code.**
 
 ### Blog posts — the collection
 
@@ -252,6 +269,12 @@ Seven kinds. The important split: **one is a real content collection; the rest a
 - Feeds page titles, social previews, RSS, and the footer. One edit updates all of them.
 
 > **Known inconsistency:** `site.url` and `site.github` still say `adityapanchal`, but the actual repository is `audi2654/adityapanchal`. Harmless — the real URL is derived from `GITHUB_REPOSITORY` during the build, and these values are only a local-development fallback. Worth reconciling when you settle on a domain.
+
+### Unlisted utility pages
+
+- **Where:** [`src/pages/homelab.astro`](../src/pages/homelab.astro) — a redirect to the Coolify dashboard at `http://140.245.18.238`, reachable at `/homelab/`
+- **How:** edit the `dashboard` constant if the server address changes. See "An unlisted page, for your eyes only" in section 3 before adding another.
+- Not in any menu, not in the sitemap, `noindex`. Unlisted, not secured.
 
 ### Auto-generated — never edit by hand
 

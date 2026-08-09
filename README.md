@@ -62,6 +62,7 @@ src/
   layouts/       Shared document and article layouts
   pages/         Static and generated routes
     intersections/  Hub page plus Short thoughts, Books, Films, and Randoms
+    homelab.astro   Unlisted redirect to a private dashboard; noindex, no sitemap entry
   styles/        Global typographic system
   utils/         Reading-time, date, taxonomy, and navigation helpers
 public/          Static assets and crawl directives
