@@ -1,4 +1,4 @@
-Temp changes
+Project details and handoff notes
 
 # Handoff: Astro personal writing site
 
@@ -49,6 +49,14 @@ The GitHub **Contributors** list may still show a `claude` entry for a while aft
 A `refs/original/refs/heads/main` backup ref from `filter-branch` still points at the pre-rewrite tip (`57da7c8`) in the local clone. It is harmless and local-only, but it keeps the old commits reachable — delete it once the rewrite is confirmed good if a clean `git gc` is wanted.
 
 Do not repeat implementation details already documented in [README.md](../README.md), [`astro.config.mjs`](../astro.config.mjs), [`src/config.ts`](../src/config.ts), or the source tree.
+
+### Maintenance session (2026-08-09, later)
+
+- **The deployment is live and confirmed working** at `https://audi2654.github.io/adityapanchal/`. The owner set the Pages source to GitHub Actions; the workflow fix plus that setting resolved the failure.
+- Renamed `temp/` to `project-dets/` with `git mv`, preserving history. `handoff-doc.md` was carried over unchanged.
+- Added [`how-to-customize.md`](how-to-customize.md) in this folder — an owner-facing guide to writing posts, adding images, adding pages, avoiding Node/package drift, the six content types, and long-horizon maintenance. **Keep it current when structure changes**; it is the owner's primary reference.
+- Added `.prose img`, `.prose figure`, and `.prose figcaption` rules to [`src/styles/global.css`](../src/styles/global.css). No image styling existed before, so any in-post image wider than the text column would have overflowed on narrow screens. Verified by building a throwaway MDX post using both `![](...)` and the `<Image />` component: both emit hashed, base-path-correct `<img>` tags with intrinsic dimensions. The throwaway files were deleted.
+- `src/assets/` is referenced by the guide as the home for post images but **does not exist yet** — it should be created on first use. Images belong there (processed, hashed) rather than in `public/` (verbatim, stable path).
 
 ## Important implementation decisions
 

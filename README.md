@@ -65,7 +65,10 @@ src/
   utils/         Reading-time, date, taxonomy, and navigation helpers
 public/          Static assets and crawl directives
 .github/         GitHub Pages workflow
+project-dets/    Customization guide and handoff notes (not published)
 ```
+
+New to the codebase, or returning after a long gap? Start with [`project-dets/how-to-customize.md`](project-dets/how-to-customize.md).
 
 ## Design principles
 
