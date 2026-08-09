@@ -6,7 +6,12 @@ Temp changes
 
 The requested content-first personal writing website has been implemented and handed off. There is no active unfinished feature request beyond future personalization, visual review, or deployment.
 
-The site implementation is **committed** (`77fad70 initial commit - pushing project files`); an earlier note in this document claiming it was uncommitted is outdated. The current in-progress work is the GitHub Pages deployment fix described below, which is uncommitted at time of writing.
+The site implementation is **committed** (`77fad70 initial commit - pushing project files`); an earlier note in this document claiming it was uncommitted is outdated. The GitHub Pages deployment fix described below is committed and pushed.
+
+### Commit authorship rules for this repository
+
+- **Never add a `Co-Authored-By: Claude ...` trailer.** The owner wants the history to read as solely theirs and will add attribution themselves if ever wanted.
+- **Commit as `audi2654 <36697715+audi2654@users.noreply.github.com>`.** A repo-local `user.name` / `user.email` is now set to enforce this, so plain `git commit` is correct — do not override it with `--author` or env vars. The machine's *global* identity is `apanchal <aditya.panchal@accelya.com>` (a work account), which is wrong for this personal project and was the source of an earlier mistake.
 
 The `origin` remote is `https://github.com/audi2654/adityapanchal.git`, so this deploys as a **project site** at `https://audi2654.github.io/adityapanchal/` — not the `adityapanchal.github.io` user site assumed by the placeholder values in [`src/config.ts`](../src/config.ts). The build derives the correct URL and base path from `GITHUB_REPOSITORY` at build time, so this mismatch does not break the deployment; it only affects the hardcoded local-development fallback.
 
@@ -31,6 +36,17 @@ Changes made to [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml
 - Added `enablement: true` to the `Configure GitHub Pages` step. When the workflow token is permitted to administer Pages, this calls `createPagesSite` with `build_type: 'workflow'` and self-heals problem 1. It is **best-effort only** — the action's own docs note it may require a PAT or GitHub App with Pages administration rights, so the Settings toggle remains the reliable fix.
 
 `node-version: 22` in the workflow was deliberately left alone. It is unrelated to the Node 20 warning (that concerned the actions' own bundled runtimes, not the project's Node) and it satisfies the `>=22.12.0` engines constraint in `package.json`.
+
+### History rewrite (2026-08-09)
+
+`main` was force-pushed twice while correcting commit metadata. Content was never altered — both rewrites were verified tree-identical before pushing.
+
+1. Removed a `Co-Authored-By: Claude` trailer from the deployment-fix commit (`321ead9` → `57da7c8`).
+2. Rewrote author *and* committer on the two commits made from the work account, `Testing changes` and the deployment fix, from `apanchal <aditya.panchal@accelya.com>` to `audi2654` (`57da7c8` → `98b0701`). Done with `git filter-branch --env-filter` over `77fad70..HEAD`.
+
+The GitHub **Contributors** list may still show a `claude` entry for a while after the trailer removal; that panel is cached and recomputed asynchronously, so it lags the actual history. Verify against `git log`, not the sidebar. If it persists for more than a day, it is worth reporting to GitHub Support rather than rewriting history again.
+
+A `refs/original/refs/heads/main` backup ref from `filter-branch` still points at the pre-rewrite tip (`57da7c8`) in the local clone. It is harmless and local-only, but it keeps the old commits reachable — delete it once the rewrite is confirmed good if a clean `git gc` is wanted.
 
 Do not repeat implementation details already documented in [README.md](../README.md), [`astro.config.mjs`](../astro.config.mjs), [`src/config.ts`](../src/config.ts), or the source tree.
 
