@@ -6,7 +6,7 @@ A quiet, static website for essays, notes, projects, and a few durable recommend
 
 - [Astro](https://astro.build/) with TypeScript and static output
 - Markdown and MDX through Astro Content Collections
-- Plain CSS with automatic system dark mode
+- Plain CSS with system dark mode plus a persisted light/dark toggle in the footer
 - Shiki syntax highlighting (built into Astro)
 - RSS and sitemap integrations
 - GitHub Pages deployment through GitHub Actions
@@ -61,6 +61,7 @@ src/
   content/       Markdown and MDX source material
   layouts/       Shared document and article layouts
   pages/         Static and generated routes
+    intersections/  Hub page plus Short thoughts, Books, Films, and Randoms
   styles/        Global typographic system
   utils/         Reading-time, date, taxonomy, and navigation helpers
 public/          Static assets and crawl directives
@@ -73,3 +74,5 @@ New to the codebase, or returning after a long gap? Start with [`project-dets/ho
 ## Design principles
 
 The layout keeps a narrow reading measure, generous vertical rhythm, quiet navigation, and clear hierarchy. System fonts make it fast and native to the reader’s device. There are no animations, gradients, trackers, or web-font requests.
+
+The single exception to the no-JavaScript rule is the theme toggle: two small inline scripts, no framework and no bundle. It is hidden entirely when JavaScript is unavailable, so it never appears as a dead control, and the theme then follows `prefers-color-scheme` as before.

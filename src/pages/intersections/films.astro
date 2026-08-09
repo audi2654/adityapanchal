@@ -1,11 +1,12 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { movies } from '../config';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { movies } from '../../config';
+import { internalUrl } from '../../utils/url';
 ---
 
-<BaseLayout title="Movies" description="Films that have stayed with Aditya.">
+<BaseLayout title="Films" description="Films that have stayed with Aditya.">
   <header class="page-header">
-    <p class="eyebrow">Movies</p>
+    <p class="eyebrow"><a href={internalUrl('/intersections/')}>Intersections</a> / Films</p>
     <h1>Films that linger.</h1>
     <p>Movies with a particular atmosphere, question, or way of noticing.</p>
   </header>

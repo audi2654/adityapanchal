@@ -1,3 +1,8 @@
+/*
+  Light is the default. Dark arrives two ways: from the reader's system setting,
+  or from an explicit choice stored as data-theme on <html> by the footer toggle.
+  An explicit choice always wins, which is why the media query excludes it.
+*/
 :root {
   color-scheme: light dark;
   --paper: #fdfcf9;
@@ -12,8 +17,23 @@
   --wide: 58rem;
 }
 
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --paper: #171716;
+  --ink: #efeee9;
+  --muted: #b6b4ad;
+  --rule: #3b3a36;
+  --accent: #9dc5e8;
+  --accent-visited: #c4afe4;
+  --code-bg: #242422;
+  --quote: #22221f;
+}
+
+:root[data-theme='light'] { color-scheme: light; }
+
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
     --paper: #171716;
     --ink: #efeee9;
     --muted: #b6b4ad;
@@ -61,7 +81,8 @@ a:focus-visible { outline: 0.16rem solid var(--accent); outline-offset: 0.2rem; 
 
 .site-header { border-bottom: 1px solid var(--rule); }
 .site-header__inner, .site-footer__inner { max-width: var(--wide); margin: 0 auto; }
-.site-header__inner { display: flex; align-items: baseline; justify-content: space-between; gap: 1.5rem; min-height: 4.75rem; }
+/* The padding is what keeps the name off the top edge of the viewport. */
+.site-header__inner { display: flex; align-items: baseline; justify-content: space-between; gap: 1.5rem; min-height: 4.75rem; padding-block: 1.5rem; }
 .site-name { color: var(--ink); font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.03em; text-decoration: none; white-space: nowrap; }
 .site-name:visited { color: var(--ink); }
 .site-nav, .site-footer ul, .tag-list, .taxonomy ul { display: flex; flex-wrap: wrap; gap: 0.55rem 1rem; margin: 0; padding: 0; list-style: none; }
@@ -80,7 +101,9 @@ p, li { hanging-punctuation: first last; }
 p { margin: 1.25rem 0; }
 
 .eyebrow { margin: 0 0 1rem; color: var(--muted); font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
-.eyebrow a { color: inherit; }
+/* Breadcrumb links in an eyebrow stay quiet but must remain recognisably clickable. */
+.eyebrow a { color: inherit; text-decoration-color: var(--rule); }
+.eyebrow a:hover { color: var(--accent); text-decoration-color: currentColor; }
 .page-header { margin-bottom: 3.5rem; }
 .page-header > p:last-child { max-width: 34rem; color: var(--muted); font-size: 1.13em; }
 .page-header--compact { margin-bottom: 2.75rem; }
@@ -94,7 +117,19 @@ p { margin: 1.25rem 0; }
 .section-heading h2 { margin: 0 0 0.9rem; font-size: 1.1rem; letter-spacing: 0; }
 .section-heading > a { font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; font-size: 0.75rem; }
 
-.writing-list, .project-list, .recommendation-list, .thought-list { margin: 0; padding: 0; list-style: none; }
+.home-lede { max-width: 37rem; margin: 1.5rem 0 0; color: var(--muted); font-size: 1.08em; line-height: 1.6; }
+
+/* Auto-fitting columns: one per row on a phone, two or three on wider screens. */
+.index-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(13.5rem, 1fr)); gap: 1.5rem 2rem; margin: 2rem 0 0; padding: 0; list-style: none; }
+.index-list > li > a { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 1.02rem; font-weight: 650; letter-spacing: -0.015em; text-decoration: none; }
+.index-list > li > a:hover { text-decoration: underline; }
+.index-list p { margin: 0.35rem 0 0; color: var(--muted); font-size: 0.94rem; line-height: 1.5; }
+
+.writing-list, .project-list, .recommendation-list, .thought-list, .random-list { margin: 0; padding: 0; list-style: none; }
+.random-list > li { border-bottom: 1px solid var(--rule); padding-block: 1.5rem; }
+.random-list > li:first-child { padding-top: 0; }
+.random-list p { margin: 0; line-height: 1.6; }
+.random-list__label { margin-bottom: 0.45rem !important; color: var(--muted); font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; }
 .writing-list > li { padding-block: 1.65rem; border-bottom: 1px solid var(--rule); }
 .writing-list > li:first-child { padding-top: 1.1rem; }
 .writing-list__heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1.25rem; }
@@ -169,11 +204,45 @@ p { margin: 1.25rem 0; }
 .site-footer { margin-top: clamp(3rem, 10vw, 7rem); border-top: 1px solid var(--rule); }
 .site-footer__inner { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding-block: 1.5rem; color: var(--muted); font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; font-size: 0.71rem; }
 .site-footer p { margin: 0; }
-.site-footer ul { justify-content: flex-end; gap: 0.5rem 1rem; }
+.site-footer ul { align-items: center; justify-content: flex-end; gap: 0.5rem 1rem; }
 .site-footer a { color: var(--muted); }
 
+/* Hidden without JavaScript, since the toggle would do nothing. */
+.theme-toggle { display: none; }
+.js .theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.15rem;
+  border: 1px solid var(--rule);
+  border-radius: 100vmax;
+  padding: 0.3rem 0.7rem;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.theme-toggle:focus-visible { outline: 0.16rem solid var(--accent); outline-offset: 0.2rem; }
+.theme-toggle__icon { display: inline-flex; }
+.theme-toggle__label { letter-spacing: 0.02em; }
+
+/* One icon, two states: the sun's rays and the moon swap by theme. */
+.theme-toggle__moon { display: none; }
+:root[data-theme='dark'] .theme-toggle__sun,
+:root[data-theme='dark'] .theme-toggle__rays { display: none; }
+:root[data-theme='dark'] .theme-toggle__moon { display: inline; }
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .theme-toggle__sun,
+  :root:not([data-theme='light']) .theme-toggle__rays { display: none; }
+  :root:not([data-theme='light']) .theme-toggle__moon { display: inline; }
+}
+
 @media (max-width: 40rem) {
-  .site-header__inner { align-items: flex-start; flex-direction: column; gap: 0.55rem; padding-block: 1rem; }
+  .site-header__inner { align-items: flex-start; flex-direction: column; gap: 0.55rem; padding-block: 1.25rem; }
   .site-nav { gap: 0.45rem 0.85rem; }
   .writing-list__heading { align-items: flex-start; flex-direction: column; gap: 0.35rem; }
   .article-pagination { grid-template-columns: 1fr; }

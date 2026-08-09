@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { randoms } from '../../config';
+import { internalUrl } from '../../utils/url';
+---
+
+<BaseLayout title="Randoms" description="Odds and ends that did not fit anywhere else.">
+  <header class="page-header">
+    <p class="eyebrow"><a href={internalUrl('/intersections/')}>Intersections</a> / Randoms</p>
+    <h1>Odds and ends.</h1>
+    <p>Quotes, links, and stray observations that did not fit anywhere else.</p>
+  </header>
+  <ul class="random-list">
+    {randoms.map((item) => (
+      <li>
+        <article>
+          {item.label && <p class="random-list__label">{item.label}</p>}
+          <p>{item.url ? <a href={item.url} rel="external">{item.note}</a> : item.note}</p>
+        </article>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>

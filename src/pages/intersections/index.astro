@@ -1,0 +1,61 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import WritingList from '../../components/WritingList.astro';
+import { getPublishedWriting, getTaxonomy, toSlug } from '../../utils/writing';
+import { internalUrl } from '../../utils/url';
+import { intersectionsIntro, intersectionSections } from '../../config';
+
+const writing = await getPublishedWriting();
+const categories = getTaxonomy(writing, 'category');
+const tags = getTaxonomy(writing, 'tags');
+---
+
+<BaseLayout title="Intersections" description={intersectionsIntro}>
+  <header class="page-header">
+    <p class="eyebrow">Intersections</p>
+    <h1>A bit of everything.</h1>
+    <p>{intersectionsIntro}</p>
+  </header>
+
+  <section aria-labelledby="places-heading">
+    <div class="section-heading">
+      <h2 id="places-heading">Where it all lives</h2>
+    </div>
+    <ul class="index-list">
+      {intersectionSections.map((section) => (
+        <li>
+          <a href={internalUrl(section.href)}>{section.label}</a>
+          <p>{section.blurb}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  {categories.length > 0 && (
+    <section class="taxonomy" aria-labelledby="threads-heading">
+      <h2 id="threads-heading">Follow a thread</h2>
+      <div class="taxonomy__group">
+        <h3>Categories</h3>
+        <ul>
+          {categories.map((category) => <li><a href={internalUrl(`/categories/${toSlug(category)}/`)}>{category}</a></li>)}
+        </ul>
+      </div>
+      <div class="taxonomy__group">
+        <h3>Tags</h3>
+        <ul>
+          {tags.map((tag) => <li><a href={internalUrl(`/tags/${toSlug(tag)}/`)}>{tag}</a></li>)}
+        </ul>
+      </div>
+    </section>
+  )}
+
+  {writing.length > 0 && (
+    <section aria-labelledby="crossing-heading">
+      <div class="section-heading">
+        <h2 id="crossing-heading">Recent crossings</h2>
+        <a href={internalUrl('/writing/')}>All writing <span aria-hidden="true">→</span></a>
+      </div>
+      <WritingList entries={writing.slice(0, 4)} />
+    </section>
+  )}
+</BaseLayout>

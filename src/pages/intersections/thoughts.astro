@@ -1,6 +1,8 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { internalUrl } from '../../utils/url';
 
+/* Newest first — this list is not sorted for you. Add new entries at the top. */
 const thoughts = [
   ['27 July 2026', 'Good defaults are acts of generosity. They make the next right step easier for someone else.'],
   ['18 July 2026', 'The shortest useful document is usually a decision, a reason, and a next action.'],
@@ -9,9 +11,9 @@ const thoughts = [
 ] as const;
 ---
 
-<BaseLayout title="Thoughts" description="Short notes from Aditya’s notebook.">
+<BaseLayout title="Short thoughts" description="Short notes from Aditya’s notebook.">
   <header class="page-header">
-    <p class="eyebrow">Thoughts</p>
+    <p class="eyebrow"><a href={internalUrl('/intersections/')}>Intersections</a> / Short thoughts</p>
     <h1>Small notes.</h1>
     <p>Ideas too brief for an essay, kept here before they disappear.</p>
   </header>

@@ -136,7 +136,23 @@ To put it in the top navigation, add an entry to `navigation` in [`src/config.ts
 
 Keep the trailing slash. The site uses `trailingSlash: 'always'`, so `/reading` without it will not match.
 
-Copy [`src/pages/books.astro`](../src/pages/books.astro) as a starting point — it's the simplest complete example. Reuse the existing classes (`page-header`, `eyebrow`, `writing-list`, `recommendation-list`, `thought-list`) so new pages inherit the site's look without writing CSS.
+Copy [`src/pages/intersections/books.astro`](../src/pages/intersections/books.astro) as a starting point — it's the simplest complete example. Reuse the existing classes (`page-header`, `eyebrow`, `writing-list`, `recommendation-list`, `thought-list`, `random-list`, `index-list`) so new pages inherit the site's look without writing CSS.
+
+### Adding a page under Intersections
+
+Folders nest routes: a file at `src/pages/intersections/music.astro` is published at `/intersections/music/`. Note the imports go up two levels (`../../layouts/BaseLayout.astro`), not one.
+
+Then add one line to `intersectionSections` in [`src/config.ts`](../src/config.ts):
+
+```ts
+{ href: '/intersections/music/', label: 'Music', blurb: 'One line describing it.' }
+```
+
+That array is the single source of truth — it drives both the Intersections hub page and the homepage section, so they can't drift apart. Don't add sub-pages to the top `navigation` array; keeping them off it is the point of having a hub. Give the new page a breadcrumb eyebrow so a reader can get back up:
+
+```astro
+<p class="eyebrow"><a href={internalUrl('/intersections/')}>Intersections</a> / Music</p>
+```
 
 ---
 
@@ -187,13 +203,13 @@ Deleting the `.astro` cache resolves a surprising share of confusing errors.
 
 ### The long-term insurance
 
-The published site is plain HTML, CSS, and images — **no JavaScript runtime, no database, no server**. Even if the Astro toolchain someday becomes unbuildable, `dist/` can be hosted anywhere as-is. Your posts are Markdown files: readable in any text editor, forever, with or without this codebase. That's the real durability guarantee, and it's worth not compromising.
+The published site is plain HTML, CSS, and images — **no framework runtime, no database, no server**. The only script is a dozen lines inline in each page for the theme toggle, and every page reads correctly with scripting off. Even if the Astro toolchain someday becomes unbuildable, `dist/` can be hosted anywhere as-is. Your posts are Markdown files: readable in any text editor, forever, with or without this codebase. That's the real durability guarantee, and it's worth not compromising.
 
 ---
 
 ## 5. What content types exist, and where each lives
 
-Six kinds. The important split: **one is a real content collection; the rest are lists in code.**
+Seven kinds. The important split: **one is a real content collection; the rest are lists in code.**
 
 ### Blog posts — the collection
 
@@ -202,15 +218,21 @@ Six kinds. The important split: **one is a real content collection; the rest are
 - **You get:** its own page, listing entry, tag and category pages, reading time, RSS, sitemap, prev/next
 - This is the one built to scale. Hundreds of posts is fine.
 
-### Thoughts — one-liners
+### Short thoughts — one-liners
 
-- **Where:** the `thoughts` array at the top of [`src/pages/thoughts.astro`](../src/pages/thoughts.astro)
+- **Where:** the `thoughts` array at the top of [`src/pages/intersections/thoughts.astro`](../src/pages/intersections/thoughts.astro)
 - **How:** add `['09 August 2026', 'The thought.'],` at the **top** of the list (newest first — it isn't sorted for you)
 - Not in RSS, not individually linkable. Good for something too small for a post.
 
-### Books, movies, projects — curated lists
+### Randoms — the catch-all
 
-- **Where:** the `books`, `movies`, and `projects` arrays in [`src/config.ts`](../src/config.ts)
+- **Where:** the `randoms` array in [`src/config.ts`](../src/config.ts), shown at [`src/pages/intersections/randoms.astro`](../src/pages/intersections/randoms.astro)
+- **How:** add an entry at the top. Only `note` is required; `label` (a short uppercase tag like `Quote` or `Link`) and `url` are optional — supply `url` and the note becomes a link.
+- For anything that isn't a post, a book, a film, or a one-line thought.
+
+### Books, films, projects — curated lists
+
+- **Where:** the `books`, `movies`, and `projects` arrays in [`src/config.ts`](../src/config.ts). The array is still named `movies` even though the page is titled Films and lives at `/intersections/films/` — renaming it would be churn for no gain.
 - **How:** copy an existing entry and edit it. Match the fields exactly — `books` needs `title`/`author`/`note`; `movies` needs `title`/`director`/`year`/`note`; `projects` needs `name`/`description`/`url`/`year`/`status`.
 - Displayed in array order. Reorder by moving lines.
 
@@ -218,6 +240,11 @@ Six kinds. The important split: **one is a real content collection; the rest are
 
 - **Where:** [`src/pages/about.astro`](../src/pages/about.astro), [`now.astro`](../src/pages/now.astro), [`uses.astro`](../src/pages/uses.astro), and the [homepage](../src/pages/index.astro)
 - **How:** edit the markup directly. `now.astro` is meant to be rewritten every few months.
+
+### The Intersections blurb
+
+- **Where:** `intersectionsIntro` in [`src/config.ts`](../src/config.ts)
+- One string, used in three places: the hub page's opening paragraph, its search and social description, and the homepage section. Edit it once.
 
 ### Site identity
 
@@ -249,6 +276,8 @@ Your Markdown files. Astro will be superseded; `.md` files with plain frontmatte
 A published URL is a promise. Once someone links to `/writing/making-room/`, that path should work forever. Practically: don't rename post files, don't reorganize folders for tidiness, and prefer adding a new page over renaming an old one. If you must move something, leave a page at the old path linking to the new one.
 
 This is also why the `internalUrl()` rule matters: if you ever move to a custom domain, correct links follow automatically.
+
+One deliberate exception has already been made: `/thoughts/`, `/books/`, and `/movies/` were moved under `/intersections/` on 9 August 2026, days after launch, when nothing could plausibly have linked to them yet. That window is now closed — treat the current paths as fixed.
 
 ### Keep the dependency surface small
 

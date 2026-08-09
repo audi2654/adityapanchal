@@ -4,9 +4,9 @@ Project details and handoff notes
 
 ## Status
 
-The requested content-first personal writing website has been implemented and handed off. There is no active unfinished feature request beyond future personalization, visual review, or deployment.
+The site is built, deployed, and live at `https://audi2654.github.io/adityapanchal/`. Deployment via GitHub Actions works. There is no unfinished feature request; what remains is personalization, browser QA of the theme toggle, and two deferred dependency advisories — all listed under "Next-session focus".
 
-The site implementation is **committed** (`77fad70 initial commit - pushing project files`); an earlier note in this document claiming it was uncommitted is outdated. The GitHub Pages deployment fix described below is committed and pushed.
+The most recent structural work is described under "UI session: dashes, theme toggle, Intersections". Read that before changing the theme CSS or the Intersections routes.
 
 ### Commit authorship rules for this repository
 
@@ -58,13 +58,52 @@ Do not repeat implementation details already documented in [README.md](../README
 - Added `.prose img`, `.prose figure`, and `.prose figcaption` rules to [`src/styles/global.css`](../src/styles/global.css). No image styling existed before, so any in-post image wider than the text column would have overflowed on narrow screens. Verified by building a throwaway MDX post using both `![](...)` and the `<Image />` component: both emit hashed, base-path-correct `<img>` tags with intrinsic dimensions. The throwaway files were deleted.
 - `src/assets/` is referenced by the guide as the home for post images but **does not exist yet** — it should be created on first use. Images belong there (processed, hashed) rather than in `public/` (verbatim, stable path).
 
+### UI session: dashes, theme toggle, Intersections (2026-08-09, later still)
+
+Four owner requests, all implemented. Nothing here is speculative — each was verified in the built output.
+
+**1. Stray `---` visible at the top-left of every page.** Root cause: [`src/components/SiteHead.astro`](../src/components/SiteHead.astro) had a second `---` *after* its closing frontmatter fence, so Astro treated it as template content and emitted a literal text node into `<head>`. The HTML parser relocates stray text out of `<head>` to the start of `<body>`, which is exactly where it appeared. Confirmed present in committed history with `git show HEAD:src/components/SiteHead.astro | tail -3` before fixing, rather than guessed at. **Watch for this shape of bug in any component whose frontmatter was hand-edited.**
+
+**2. Light/dark toggle.** New [`src/components/ThemeToggle.astro`](../src/components/ThemeToggle.astro), placed as the last item in the footer nav. Design constraints it satisfies:
+
+- No framework, no hydration, no bundle — one `is:inline` script in the component, plus a second in `SiteHead.astro` that applies the saved theme in `<head>` before first paint so there is no flash of the wrong palette.
+- The `SiteHead` script adds a `js` class to `<html>`; CSS keeps `.theme-toggle { display: none }` until then, so the control never renders as a dead button without scripting.
+- A single inline SVG with sun and moon paths swapped by CSS on theme — no second request, no icon font.
+- `min-height: 2.15rem` for a usable touch target; the footer stacks below 40rem.
+- The button's `aria-label` and visible label always name the theme it will switch **to**, and `aria-pressed` tracks the current state.
+- `localStorage` access is wrapped in `try`/`catch`; if storage is blocked the choice simply applies to that page view.
+
+**3. Removed the hidden "Elsewhere in this small corner" homepage block** and added **Intersections** to the top navigation between Writing and Projects, per the owner's dislike of tucked-away sections. The blurb text lives in `intersectionsIntro` in [`src/config.ts`](../src/config.ts).
+
+**4. Nested the small pages under Intersections.** `git mv` preserved rename history for the three existing pages:
+
+| Before | After |
+|---|---|
+| `/thoughts/` | `/intersections/thoughts/` (retitled "Short thoughts") |
+| `/books/` | `/intersections/books/` |
+| `/movies/` | `/intersections/films/` (retitled "Films") |
+| — | `/intersections/randoms/` (new) |
+
+`intersectionSections` in `src/config.ts` is the single source of truth for this list; the hub page and the homepage both map over it, so adding a fifth sub-page is a one-line config change plus the page file. The `movies` config array was left named `movies` even though the page is now Films — renaming it would be churn.
+
+Inbound links to the three old paths now 404. This was an accepted trade: the owner asked for the nesting, and the pages were only days old on a site with no external links yet. The "never break a URL" section of [`how-to-customize.md`](how-to-customize.md) now records this as a closed one-off exception.
+
+Also fixed along the way: `.eyebrow a` had `color: inherit` with no other affordance, which would have made the new `Intersections /` breadcrumbs indistinguishable from plain text. It now carries a muted underline colour plus a hover state.
+
+**Follow-up trims requested by the owner and applied in the same session:** removed the "The subjects" chip section from the Intersections hub — the `intersections` array in `src/config.ts` and the `.subject-list` CSS went with it, since nothing else used them. Added `padding-block: 1.5rem` to `.site-header__inner`; removing the stray `---` had also removed the accidental whitespace that was keeping the site name off the top edge of the viewport, so the header needed real padding rather than that side effect.
+
+**Verified:** `npm run check` clean (0/0/0 across 35 files). `GITHUB_REPOSITORY=audi2654/adityapanchal npm run build` produced **24 pages** (up from 22). A shell link-checker resolved every `href="/adityapanchal/..."` in every built HTML file against `dist` and found **zero dead links**. The `data-theme` selectors survive CSS minification. The theme script is inlined in `dist/index.html`, and the toggle renders in the footer of both the homepage and a nested page.
+
+**Not verified:** the toggle has never been exercised in a real browser. The `browser:control-in-app-browser` skill suggested at the bottom of this document **does not exist in the current environment** — invoking it fails with `Unknown skill`. All QA was static inspection of `dist`. A future session with browser tooling should confirm the toggle click, the no-flash behaviour on reload, keyboard focus, and layout at mobile widths.
+
 ## Important implementation decisions
 
 - Internal links use [`src/utils/url.ts`](../src/utils/url.ts), which prefixes Astro's configured base path. Preserve this helper for any new internal route so both user sites and GitHub Pages project sites work.
 - Deployment metadata is derived from `GITHUB_REPOSITORY`; `SITE_URL` can override the public canonical URL for a custom domain. See [`astro.config.mjs`](../astro.config.mjs) and the deployment notes in [README.md](../README.md).
 - `robots.txt` is generated by [`src/pages/robots.txt.ts`](../src/pages/robots.txt.ts), not stored in `public`, so its sitemap URL always matches the build configuration.
 - Content schemas use `z` from `astro/zod`, which is the non-deprecated Astro 7 path. Do not change it back to the legacy `astro:content` export.
-- The design intentionally uses no hydration/client runtime JavaScript. Dark mode follows `prefers-color-scheme`; there is no theme toggle by design.
+- The design uses **no framework hydration and no client bundle**. The one exception is the theme toggle, added 9 August 2026: two `is:inline` scripts totalling a few dozen lines. Keep it that way — do not introduce a framework island for interactivity.
+- Theme resolution order: an explicit `data-theme` on `<html>` (set by the toggle, persisted in `localStorage`) always beats `prefers-color-scheme`. That is why the dark media query in [`src/styles/global.css`](../src/styles/global.css) is written as `:root:not([data-theme='light'])`. Changing that selector shape will break the override.
 
 ## Verification completed
 
@@ -81,20 +120,19 @@ Do not repeat implementation details already documented in [README.md](../README
 
 ## Next-session focus
 
-**Blocking, and owner-only:** in **Settings → Pages → Build and deployment → Source**, select **GitHub Actions** on `github.com/audi2654/adityapanchal`. No agent can do this; it is a repository setting requiring owner access. The `enablement: true` flag added to the workflow may cover it automatically, but do not rely on that. Then commit and push the workflow change and confirm the Actions run goes green — the fix is not verified until it does.
+The previously blocking Pages **Source → GitHub Actions** setting has been done by the owner, and deploys are green. If a future run fails, check in this order: whether the `github-pages` environment has protection rules blocking `main`; and whether repository **Settings → Actions → Workflow permissions** is restrictive enough to block the `pages: write` / `id-token: write` grants the workflow requests.
 
-If the run still fails after the Source is set to GitHub Actions, check in this order: whether the `github-pages` environment has protection rules blocking `main`; and whether repository **Settings → Actions → Workflow permissions** is restrictive enough to block the `pages: write` / `id-token: write` grants the workflow requests.
-
-Then, personalization and polish:
+Personalization and polish:
 
 1. Replace the sample bio, recommendations, projects, and writing with the owner’s real material in [`src/config.ts`](../src/config.ts), [`src/pages/`](../src/pages), and [`src/content/writing/`](../src/content/writing/). Note that `site.url` and `site.github` there still point at `adityapanchal`, while the actual remote is `audi2654` — reconcile these when the real domain is decided.
 2. Confirm the desired public domain and GitHub repository name, then update `SITE_URL` through GitHub Actions variables if a custom domain is used.
-3. Resolve the 2 high-severity production advisories noted under Verification.
-4. Optionally perform browser-based visual and accessibility QA at desktop and mobile widths before publishing.
+3. Resolve the 2 high-severity production advisories noted under Verification. `npm audit fix` has been offered twice and **not authorized** — ask before running it.
+4. Browser QA of the theme toggle, which has never run. See "Not verified" in the UI session notes above.
+5. The seeded sample content under Intersections (three books, three films, three randoms, the thoughts list) is still placeholder material written by an agent, not the owner's own. Replace it.
 
 ## Suggested skills
 
-- `browser:control-in-app-browser` — use for visual QA of the locally served site, keyboard navigation, responsive layout, and checking rendered metadata/links.
+- `browser:control-in-app-browser` — **unavailable as of 2026-08-09**; invoking it returns `Unknown skill`. It would be the right tool for visual QA of the locally served site, keyboard navigation, responsive layout, and rendered metadata. Check whether it exists before planning around it; otherwise fall back to inspecting `dist` directly.
 - `openai-docs` — not normally needed; only invoke if a future request involves OpenAI products or APIs.
 
 No sensitive credentials, keys, or private user data were introduced or encountered.

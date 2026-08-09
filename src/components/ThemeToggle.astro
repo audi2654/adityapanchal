@@ -1,0 +1,70 @@
+---
+/*
+  The site's only interactive element. It is deliberately plain: no framework, no
+  hydration — just a button and a small inline script. It is hidden unless the
+  `js` class is present on <html>, so it never appears as a dead control.
+
+  Until it is pressed, the theme follows the reader's system preference. Pressing
+  it stores an explicit choice in localStorage, which then wins on every visit.
+*/
+---
+
+<button
+  class="theme-toggle"
+  type="button"
+  data-theme-toggle
+  aria-pressed="false"
+  aria-label="Switch to dark theme"
+  title="Switch theme"
+>
+  <span class="theme-toggle__icon" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+      <circle class="theme-toggle__sun" cx="12" cy="12" r="4.2" />
+      <g class="theme-toggle__rays">
+        <path d="M12 2.6v2.1M12 19.3v2.1M2.6 12h2.1M19.3 12h2.1M5.4 5.4l1.5 1.5M17.1 17.1l1.5 1.5M18.6 5.4l-1.5 1.5M6.9 17.1l-1.5 1.5" />
+      </g>
+      <path class="theme-toggle__moon" d="M20.5 14.3A8.6 8.6 0 0 1 9.7 3.5a8.6 8.6 0 1 0 10.8 10.8Z" />
+    </svg>
+  </span>
+  <span class="theme-toggle__label" data-theme-label>Dark</span>
+</button>
+
+<script is:inline>
+  (() => {
+    const root = document.documentElement;
+    const button = document.querySelector('[data-theme-toggle]');
+    if (!button) return;
+
+    const label = button.querySelector('[data-theme-label]');
+    const system = window.matchMedia('(prefers-color-scheme: dark)');
+
+    // What the reader is looking at right now, whether chosen or inherited.
+    const current = () => root.dataset.theme || (system.matches ? 'dark' : 'light');
+
+    // The button always advertises the theme it will switch *to*.
+    const sync = () => {
+      const next = current() === 'dark' ? 'light' : 'dark';
+      button.setAttribute('aria-pressed', String(current() === 'dark'));
+      button.setAttribute('aria-label', `Switch to ${next} theme`);
+      if (label) label.textContent = next === 'dark' ? 'Dark' : 'Light';
+    };
+
+    button.addEventListener('click', () => {
+      const next = current() === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch {
+        /* Choice applies to this page view only if storage is unavailable. */
+      }
+      sync();
+    });
+
+    // Track the system setting while no explicit choice has been made.
+    system.addEventListener('change', () => {
+      if (!root.dataset.theme) sync();
+    });
+
+    sync();
+  })();
+</script>

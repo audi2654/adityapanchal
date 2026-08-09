@@ -1,11 +1,12 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { books } from '../config';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { books } from '../../config';
+import { internalUrl } from '../../utils/url';
 ---
 
 <BaseLayout title="Books" description="Books that have shaped Aditya’s thinking.">
   <header class="page-header">
-    <p class="eyebrow">Books</p>
+    <p class="eyebrow"><a href={internalUrl('/intersections/')}>Intersections</a> / Books</p>
     <h1>Books that earned a reread.</h1>
     <p>Not a canon—just a personal shelf of useful companions.</p>
   </header>
