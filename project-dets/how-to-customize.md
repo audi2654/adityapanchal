@@ -272,7 +272,7 @@ Eight kinds. The important split: **one is a real content collection; the rest a
 
 ### Unlisted utility pages
 
-- **Where:** [`src/pages/homelab.astro`](../src/pages/homelab.astro) — a redirect to the Coolify dashboard at `http://140.245.18.238`, reachable at `/homelab/`
+- **Where:** [`src/pages/homelab.astro`](../src/pages/homelab.astro) — a redirect to the Coolify dashboard at `http://140.245.18.238:8000`, reachable at `/homelab/`
 - **How:** edit the `dashboard` constant if the server address changes. See "An unlisted page, for your eyes only" in section 3 before adding another.
 - Not in any menu, not in the sitemap, `noindex`. Unlisted, not secured.
 

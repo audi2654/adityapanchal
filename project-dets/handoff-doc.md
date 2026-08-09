@@ -100,7 +100,7 @@ Also fixed along the way: `.eyebrow a` had `color: inherit` with no other afford
 
 The owner runs self-hosted OSS apps via Coolify on their own VPS and wanted a personal shortcut to it from this site — reachable by typing the URL, invisible to everyone else.
 
-[`src/pages/homelab.astro`](../src/pages/homelab.astro) is published at `/adityapanchal/homelab/` and redirects to `http://140.245.18.238` with a `<meta http-equiv="refresh">`. A meta refresh rather than a script, so it works with scripting disabled; the destination is also a plain link on the page as a fallback.
+[`src/pages/homelab.astro`](../src/pages/homelab.astro) is published at `/adityapanchal/homelab/` and redirects to `http://140.245.18.238:8000` with a `<meta http-equiv="refresh">`. A meta refresh rather than a script, so it works with scripting disabled; the destination is also a plain link on the page as a fallback.
 
 Three mechanisms keep it out of search results, and all three matter:
 
@@ -112,7 +112,9 @@ Three mechanisms keep it out of search results, and all three matter:
 
 **This is unlisted, not private.** A static site on GitHub Pages cannot authenticate anyone: the HTML is public to whoever knows the path, and it names the server's IP. Obscurity is the only barrier — the actual security boundary is Coolify's own login. If the VPS should not be publicly reachable at all, that belongs in the VPS firewall or a VPN, not here.
 
-**Unverified:** whether `140.245.18.238` actually serves the Coolify login, and over which scheme. Probing it from this machine returns a Zscaler corporate-proxy interception (`307` to `gateway.zscaler.net` on port 80, `403` on 443), so the real response could not be observed. The owner should confirm the redirect lands correctly. **If the login is served over plain `http`, credentials cross the network in cleartext** — switching to `https` with a real certificate (a domain plus Coolify's built-in Let's Encrypt support) is worth doing, after which the URL in `homelab.astro` needs updating.
+The owner corrected the target to port `8000` immediately after the first commit — Coolify's default listening port — so the working address is `http://140.245.18.238:8000`. If it moves again, the `dashboard` constant at the top of `homelab.astro` is the only place to edit.
+
+**Unverified:** whether that address actually serves the Coolify login. Probing it from this machine is useless — a Zscaler corporate proxy intercepts the request (`307` to `gateway.zscaler.net` on port 80, `403` on 443), so the real response can never be observed from here. Any future session on this machine should assume the same and rely on the owner to confirm. **The login is served over plain `http`, so credentials cross the network in cleartext** — putting a domain and a Let's Encrypt certificate in front of it (Coolify supports this natively) is worth doing, after which the URL here needs updating to `https` and the `:8000` port likely disappears.
 
 ## Important implementation decisions
 
