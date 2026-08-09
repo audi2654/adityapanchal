@@ -47,7 +47,7 @@ Nested folders become nested URLs, so `src/content/writing/notes/example.md` is 
 
 ## Publishing to GitHub Pages
 
-1. In the GitHub repository, open **Settings → Pages** and select **GitHub Actions** as the source.
+1. In the GitHub repository, open **Settings → Pages** and select **GitHub Actions** as the source. This step is required and cannot be done from the workflow; without it the `Configure GitHub Pages` step fails with `HttpError: Not Found — Get Pages site failed`.
 2. Push to `main`. The workflow in `.github/workflows/deploy.yml` builds and publishes the static `dist/` folder.
 3. For a custom domain, set `SITE_URL` in the repository Actions variables to its fully qualified HTTPS URL (for example, `https://example.com`). Add the domain through GitHub Pages settings as well.
 
