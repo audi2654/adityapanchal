@@ -40,6 +40,9 @@ jobs:
         run: npm ci
 
       - name: Build site
+        env:
+          SITE_URL: https://adityapanchal.is-a.dev
+          BASE_PATH: /
         run: npm run build
 
       - name: Upload static site
