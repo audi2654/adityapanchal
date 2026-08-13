@@ -266,7 +266,9 @@ Seven kinds. The important split: **one is a real content collection; the rest a
 - **Where:** the `site` object in [`src/config.ts`](../src/config.ts) — name, description, canonical URL, author, GitHub link
 - Feeds page titles, social previews, RSS, and the footer. One edit updates all of them.
 
-> **Known inconsistency:** `site.url` still says `https://adityapanchal.github.io` and `site.github` says `github.com/adityapanchal`, but the real address is `https://adityapanchal.is-a.dev` and the real repository is `audi2654/adityapanchal`. The published URL is harmless — the deploy workflow passes `SITE_URL`, which wins, so these are only a local-development fallback. **`site.github` is not harmless:** it is a real link in the footer, and it points at an account that isn't yours. Worth fixing.
+> **Known inconsistency:** `site.url` still says `https://adityapanchal.github.io`, while the real address is `https://adityapanchal.is-a.dev`. Harmless — the deploy workflow passes `SITE_URL`, which wins, so this value is only a local-development fallback. Worth aligning anyway so a local build matches production.
+>
+> One real dead link is left: the first entry in the `projects` array points at `github.com/adityapanchal/adityapanchal`, a repository that doesn't exist. It should be `audi2654/adityapanchal`. (`site.github`, which drives the GitHub link in the footer and on the About page, was corrected to `github.com/audi2654` on 13 August 2026.)
 
 ### Auto-generated — never edit by hand
 

@@ -6,7 +6,7 @@ export const site = {
   locale: 'en_IN',
   language: 'en',
   author: 'Aditya Panchal',
-  github: 'https://github.com/adityapanchal'
+  github: 'https://github.com/audi2654'
 } as const;
 
 export const navigation = [
