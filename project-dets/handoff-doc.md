@@ -144,6 +144,12 @@ The site was seeded with a placeholder `adityapanchal` GitHub account that never
 
 Verified after a clean rebuild: 24 pages, `npm run check` 0/0/0 across 35 files, 25 `github.com/audi2654` links plus the one repository link, and **zero** occurrences of `adityapanchal.github.io` or `github.com/adityapanchal` anywhere in `dist`.
 
+### LinkedIn link added (2026-08-13)
+
+`site.linkedin` (`https://www.linkedin.com/in/aditya-panchal/`) joined `site.github` in [`src/config.ts`](../src/config.ts), and renders in the same two places the GitHub link does: the footer nav in [`Footer.astro`](../src/components/Footer.astro) and the "Find me" list in [`about.astro`](../src/pages/about.astro). Both use `rel="me external"` — `rel="me"` is the bidirectional-identity convention, so the linked profile can verify the site back.
+
+That two-file duplication is the pattern for every profile link here; there is no loop over a `social` array. If a third profile is ever added it is worth converting to one, but at two links the array would cost more than it saves. Verified: 25 LinkedIn links in `dist` (one per page's footer, plus About), `npm run check` 0/0/0.
+
 ## Important implementation decisions
 
 - Internal links use [`src/utils/url.ts`](../src/utils/url.ts), which prefixes Astro's configured base path. Preserve this helper for any new internal route so both user sites and GitHub Pages project sites work.

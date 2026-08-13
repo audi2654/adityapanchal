@@ -263,8 +263,9 @@ Seven kinds. The important split: **one is a real content collection; the rest a
 
 ### Site identity
 
-- **Where:** the `site` object in [`src/config.ts`](../src/config.ts) — name, description, canonical URL, author, GitHub link
+- **Where:** the `site` object in [`src/config.ts`](../src/config.ts) — name, description, canonical URL, author, GitHub and LinkedIn links
 - Feeds page titles, social previews, RSS, and the footer. One edit updates all of them.
+- `site.github` and `site.linkedin` each render in exactly two places: the footer (so, every page) and the "Find me" list on [`about.astro`](../src/pages/about.astro). To add another profile, add a field here and a `<li>` in both files — the pattern is `<a href={site.x} rel="me external">`. `rel="me"` is what lets the linked profile verify it back.
 
 > **All of these were reconciled on 13 August 2026** and now name the real domain and the real `audi2654` account. Three had drifted to a placeholder `adityapanchal` account that doesn't exist: `site.github` (the footer and About links, on every page), `site.url` (the local-build fallback for canonicals), and the first entry in the `projects` array (a dead link on the Projects page). The URL text drawn inside [`public/og.svg`](../public/og.svg) was stale too — see below.
 
