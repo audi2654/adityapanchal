@@ -127,6 +127,23 @@ env:
 
 **`is-a.dev` is a free community subdomain, not an owned domain.** It behaves like a real address but cannot be transferred or sold, and it outlives the project only as long as that registry does. Fine for now; a paid domain is the durable version for the owner's stated 20–30 year horizon. Any future move is again just those two workflow values.
 
+### Identity and address cleanup (2026-08-13)
+
+The site was seeded with a placeholder `adityapanchal` GitHub account that never existed, and the domain move left the old Pages address in several places. All of it is now consistent. Four values changed:
+
+| Where | Was | Now |
+|---|---|---|
+| `site.github` in [`src/config.ts`](../src/config.ts) | `github.com/adityapanchal` | `github.com/audi2654` |
+| `site.url` in [`src/config.ts`](../src/config.ts) | `https://adityapanchal.github.io` | `https://adityapanchal.is-a.dev` |
+| `projects[0].url` in [`src/config.ts`](../src/config.ts) | `github.com/adityapanchal/adityapanchal` | `github.com/audi2654/adityapanchal` |
+| the URL text inside [`public/og.svg`](../public/og.svg) | `adityapanchal.github.io` | `adityapanchal.is-a.dev` |
+
+`site.github` mattered most: it feeds [`Footer.astro`](../src/components/Footer.astro) *and* [`about.astro`](../src/pages/about.astro), so every one of the 24 pages carried a link to a stranger's profile. `projects[0].url` was a dead link on the Projects page. `site.url` only affects local builds, since `SITE_URL` overrides it in CI, but leaving it stale means local canonicals silently disagree with production.
+
+**`public/og.svg` is the one to remember.** It is the social-preview card, and the site's address is *drawn into the image as text* — so it does not change when the domain does, and no build step, type check, or link checker will ever flag it. It lives in `public/`, so it is copied verbatim with no processing. Any future domain change has to edit that `<text>` element by hand.
+
+Verified after a clean rebuild: 24 pages, `npm run check` 0/0/0 across 35 files, 25 `github.com/audi2654` links plus the one repository link, and **zero** occurrences of `adityapanchal.github.io` or `github.com/adityapanchal` anywhere in `dist`.
+
 ## Important implementation decisions
 
 - Internal links use [`src/utils/url.ts`](../src/utils/url.ts), which prefixes Astro's configured base path. Preserve this helper for any new internal route so both user sites and GitHub Pages project sites work.
@@ -157,7 +174,7 @@ The previously blocking Pages **Source → GitHub Actions** setting has been don
 Personalization and polish:
 
 1. Replace the sample bio, recommendations, projects, and writing with the owner’s real material in [`src/config.ts`](../src/config.ts), [`src/pages/`](../src/pages), and [`src/content/writing/`](../src/content/writing/).
-2. Two stale values remain in [`src/config.ts`](../src/config.ts). **`projects[0].url` reads `https://github.com/adityapanchal/adityapanchal`** — the wrong account and a repository that does not exist, so it is a dead link on the Projects page; it should be `audi2654/adityapanchal`. **`site.url` reads `https://adityapanchal.github.io`**, which is harmless because `SITE_URL` overrides it in the build, but worth aligning to `https://adityapanchal.is-a.dev` so local builds match production. (`site.github` was corrected to `https://github.com/audi2654` on 13 August 2026 — it drives the footer and About links on every page.)
+2. ~~Reconcile the placeholder identity values.~~ **Done 13 August 2026** — see "Identity and address cleanup" above. Nothing in the working tree names the old address or the placeholder account any more.
 3. Resolve the 2 high-severity production advisories noted under Verification. `npm audit fix` has been offered twice and **not authorized** — ask before running it.
 4. Browser QA of the theme toggle, which has never run. See "Not verified" in the UI session notes above.
 5. The seeded sample content under Intersections (three books, three films, three randoms, the thoughts list) is still placeholder material written by an agent, not the owner's own. Replace it.

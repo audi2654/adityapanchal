@@ -2,7 +2,7 @@ export const site = {
   name: 'Aditya Panchal',
   shortName: 'Aditya',
   description: 'Notes on making useful things, learning deliberately, and paying attention.',
-  url: 'https://adityapanchal.github.io',
+  url: 'https://adityapanchal.is-a.dev',
   locale: 'en_IN',
   language: 'en',
   author: 'Aditya Panchal',
@@ -40,7 +40,7 @@ export const projects = [
   {
     name: 'Personal website',
     description: 'The small, durable publishing system you are reading.',
-    url: 'https://github.com/adityapanchal/adityapanchal',
+    url: 'https://github.com/audi2654/adityapanchal',
     year: '2026',
     status: 'Ongoing'
   },

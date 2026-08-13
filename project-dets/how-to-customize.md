@@ -266,9 +266,9 @@ Seven kinds. The important split: **one is a real content collection; the rest a
 - **Where:** the `site` object in [`src/config.ts`](../src/config.ts) — name, description, canonical URL, author, GitHub link
 - Feeds page titles, social previews, RSS, and the footer. One edit updates all of them.
 
-> **Known inconsistency:** `site.url` still says `https://adityapanchal.github.io`, while the real address is `https://adityapanchal.is-a.dev`. Harmless — the deploy workflow passes `SITE_URL`, which wins, so this value is only a local-development fallback. Worth aligning anyway so a local build matches production.
->
-> One real dead link is left: the first entry in the `projects` array points at `github.com/adityapanchal/adityapanchal`, a repository that doesn't exist. It should be `audi2654/adityapanchal`. (`site.github`, which drives the GitHub link in the footer and on the About page, was corrected to `github.com/audi2654` on 13 August 2026.)
+> **All of these were reconciled on 13 August 2026** and now name the real domain and the real `audi2654` account. Three had drifted to a placeholder `adityapanchal` account that doesn't exist: `site.github` (the footer and About links, on every page), `site.url` (the local-build fallback for canonicals), and the first entry in the `projects` array (a dead link on the Projects page). The URL text drawn inside [`public/og.svg`](../public/og.svg) was stale too — see below.
+
+**One easy thing to miss:** the social-preview image at [`public/og.svg`](../public/og.svg) has the site's address written into it as text. It's the picture that appears when a link to the site is shared, so if the domain changes it has to be edited by hand — nothing in the build will catch it. Open the file and change the `<text>` element near the bottom.
 
 ### Auto-generated — never edit by hand
 

@@ -12,7 +12,7 @@ const githubPagesUrl = owner && repositoryName
   : undefined;
 
 export default defineConfig({
-  site: process.env.SITE_URL ?? githubPagesUrl ?? 'https://adityapanchal.github.io',
+  site: process.env.SITE_URL ?? githubPagesUrl ?? 'https://adityapanchal.is-a.dev',
   base: process.env.BASE_PATH ?? (repositoryName && !isUserSite ? `/${repositoryName}` : '/'),
   output: 'static',
   trailingSlash: 'always',

@@ -51,7 +51,9 @@ Nested folders become nested URLs, so `src/content/writing/notes/example.md` is 
 2. Push to `main`. The workflow in `.github/workflows/deploy.yml` builds and publishes the static `dist/` folder.
 3. The site is served from the custom domain `https://adityapanchal.is-a.dev`. The workflow's `Build site` step sets `SITE_URL` to that address and `BASE_PATH` to `/`, because a custom domain serves from the root rather than from a `/<repo>/` sub-path. **Both must change together** — a new domain with the old base path, or vice versa, produces a site whose links all point at the wrong place. The domain itself is configured in **Settings → Pages → Custom domain**.
 
-Without those two variables the configuration falls back to deriving a project-site URL and `/<repo>/` base path from `GITHUB_REPOSITORY`, which is what the old `audi2654.github.io/adityapanchal/` address used. Locally, with neither set, it defaults to `https://adityapanchal.github.io` for canonical links.
+Without those two variables the configuration falls back to deriving a project-site URL and `/<repo>/` base path from `GITHUB_REPOSITORY`, which is what the old `audi2654.github.io/adityapanchal/` address used. Locally, with neither set and no `GITHUB_REPOSITORY` present, it falls back to `https://adityapanchal.is-a.dev` for canonical links.
+
+Note that the social-preview card at `public/og.svg` has the site's address drawn into it as text. It is copied verbatim, so a domain change means editing that file by hand — no build step will flag it.
 
 ## Structure
 
