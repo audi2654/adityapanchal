@@ -4,7 +4,7 @@ A practical reference for the person maintaining this site — written to still 
 
 Everything here was verified against this repository, not assumed from Astro's general docs.
 
-**The one rule that matters:** every internal link must go through `internalUrl()` from [`src/utils/url.ts`](../src/utils/url.ts). The site is published at `https://audi2654.github.io/adityapanchal/`, a *project site*, so every path needs the `/adityapanchal/` prefix. Hardcode `/about/` and the link breaks in production while looking fine locally. Markdown links inside posts and images are handled automatically — this rule is only for `.astro` files.
+**The one rule that matters:** every internal link must go through `internalUrl()` from [`src/utils/url.ts`](../src/utils/url.ts). The site now lives at its own domain, `https://adityapanchal.is-a.dev/`, so the base path is `/` and a hardcoded `/about/` happens to work — but that is luck, not design. It broke on the old `audi2654.github.io/adityapanchal/` address and it will break again on the next move. Keep using the helper. Markdown links inside posts and images are handled automatically; this rule is only for `.astro` files.
 
 ---
 
@@ -156,20 +156,18 @@ That array is the single source of truth — it drives both the Intersections hu
 
 ### An unlisted page, for your eyes only
 
-`/homelab/` is the working example — it redirects to the Coolify dashboard on your VPS and is meant to be reachable only by typing the URL. Copy [`src/pages/homelab.astro`](../src/pages/homelab.astro) if you want another.
+Every page here is public today, but the plumbing for an unlisted one is still in place if you ever want it. Three things keep a page out of search results, and you need **all three**:
 
-Three things keep such a page out of search results, and you need **all three**:
-
-1. Pass `noindex` to `BaseLayout`: `<BaseLayout title="Homelab" description="..." noindex>`.
+1. Pass `noindex` to `BaseLayout`: `<BaseLayout title="Scratch" description="..." noindex>`. That swaps the usual `index, follow` for a restrictive robots meta tag.
 2. Add it to the sitemap filter in [`astro.config.mjs`](../astro.config.mjs) — a sitemap entry actively invites crawlers, so this one is easy to forget and important:
    ```js
-   sitemap({ filter: (page) => !page.includes('/homelab/') })
+   sitemap({ filter: (page) => !page.includes('/scratch/') })
    ```
 3. Don't link to it. Not from `navigation`, not from any page. Links are how crawlers find things.
 
 **Do not add it to `robots.txt`.** That seems like the obvious move and it backfires twice: `robots.txt` is public, so a `Disallow` line hands out the exact URL to anyone who looks; and a crawler that obeys the disallow never loads the page, so it never sees the `noindex` and can still list the bare URL. Silence works better.
 
-**Understand what this is, though.** Unlisted is not private. This is a static site with no login — the page is public HTML to anyone who knows or guesses the path, and `/homelab/` names your server's IP. The real protection is Coolify's own login screen. If the server shouldn't be publicly reachable at all, that's a firewall or VPN decision on the VPS, not something a page here can fix.
+**Understand what this is, though.** Unlisted is not private. This is a static site with no login, so the page is public HTML to anyone who knows or guesses the path — obscurity is the only barrier. Anything that genuinely needs protecting belongs behind a real login, on a separate host, not on a page here.
 
 ---
 
@@ -226,7 +224,7 @@ The published site is plain HTML, CSS, and images — **no framework runtime, no
 
 ## 5. What content types exist, and where each lives
 
-Eight kinds. The important split: **one is a real content collection; the rest are lists in code.**
+Seven kinds. The important split: **one is a real content collection; the rest are lists in code.**
 
 ### Blog posts — the collection
 
@@ -268,13 +266,7 @@ Eight kinds. The important split: **one is a real content collection; the rest a
 - **Where:** the `site` object in [`src/config.ts`](../src/config.ts) — name, description, canonical URL, author, GitHub link
 - Feeds page titles, social previews, RSS, and the footer. One edit updates all of them.
 
-> **Known inconsistency:** `site.url` and `site.github` still say `adityapanchal`, but the actual repository is `audi2654/adityapanchal`. Harmless — the real URL is derived from `GITHUB_REPOSITORY` during the build, and these values are only a local-development fallback. Worth reconciling when you settle on a domain.
-
-### Unlisted utility pages
-
-- **Where:** [`src/pages/homelab.astro`](../src/pages/homelab.astro) — a redirect to the Coolify dashboard at `http://140.245.18.238:8000`, reachable at `/homelab/`
-- **How:** edit the `dashboard` constant if the server address changes. See "An unlisted page, for your eyes only" in section 3 before adding another.
-- Not in any menu, not in the sitemap, `noindex`. Unlisted, not secured.
+> **Known inconsistency:** `site.url` still says `https://adityapanchal.github.io` and `site.github` says `github.com/adityapanchal`, but the real address is `https://adityapanchal.is-a.dev` and the real repository is `audi2654/adityapanchal`. The published URL is harmless — the deploy workflow passes `SITE_URL`, which wins, so these are only a local-development fallback. **`site.github` is not harmless:** it is a real link in the footer, and it points at an account that isn't yours. Worth fixing.
 
 ### Auto-generated — never edit by hand
 
@@ -319,7 +311,9 @@ GitHub is not forever. Once a year, keep a copy of the repository somewhere you 
 
 ### Own your address
 
-The `audi2654.github.io/adityapanchal/` URL is tied to a platform and an account name. If you expect to keep this for decades, buy a domain and point it here — then the address is yours no matter where it's hosted. [README.md](../README.md) covers the `SITE_URL` variable for that. Do it before you accumulate inbound links, not after.
+Done, on 13 August 2026: the site is at `https://adityapanchal.is-a.dev/`, set by `SITE_URL` and `BASE_PATH` in [the deploy workflow](../.github/workflows/deploy.yml). GitHub redirects the old `audi2654.github.io/adityapanchal/` path here, so nothing that was linked is lost.
+
+One caveat worth knowing: `is-a.dev` is a free subdomain granted by a community registry, not a domain you own. It costs nothing and behaves like a real address, but you can't sell it, transfer it, or outlast the project that hands it out. For the 20–30 year horizon, a domain you actually pay for is the durable version. Moving again is cheap — change the two values in the workflow — but every move strands inbound links, so the fewer moves the better.
 
 ### Prefer a boring cadence
 

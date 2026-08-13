@@ -19,11 +19,12 @@ export default defineConfig({
   integrations: [
     mdx(),
     /*
-      Unlisted pages must never reach the sitemap — submitting a URL is an
-      invitation to crawl it. Keep this list in step with any page that sets
-      `noindex` on BaseLayout.
+      No filter: every page is public. If a page ever sets `noindex` on
+      BaseLayout, add a `filter` here to drop it too — a sitemap entry is an
+      active request to crawl a URL, so listing one you asked not to be indexed
+      works against itself.
     */
-    sitemap({ filter: (page) => !page.includes('/homelab/') })
+    sitemap()
   ],
   markdown: {
     shikiConfig: {

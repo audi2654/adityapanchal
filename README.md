@@ -49,9 +49,9 @@ Nested folders become nested URLs, so `src/content/writing/notes/example.md` is 
 
 1. In the GitHub repository, open **Settings → Pages** and select **GitHub Actions** as the source. This step is required and cannot be done from the workflow; without it the `Configure GitHub Pages` step fails with `HttpError: Not Found — Get Pages site failed`.
 2. Push to `main`. The workflow in `.github/workflows/deploy.yml` builds and publishes the static `dist/` folder.
-3. For a custom domain, set `SITE_URL` in the repository Actions variables to its fully qualified HTTPS URL (for example, `https://example.com`). Add the domain through GitHub Pages settings as well.
+3. The site is served from the custom domain `https://adityapanchal.is-a.dev`. The workflow's `Build site` step sets `SITE_URL` to that address and `BASE_PATH` to `/`, because a custom domain serves from the root rather than from a `/<repo>/` sub-path. **Both must change together** — a new domain with the old base path, or vice versa, produces a site whose links all point at the wrong place. The domain itself is configured in **Settings → Pages → Custom domain**.
 
-The Astro configuration derives the correct project-site path automatically in GitHub Actions. Locally, it defaults to `https://adityapanchal.github.io` for canonical links; override it with `SITE_URL` if needed.
+Without those two variables the configuration falls back to deriving a project-site URL and `/<repo>/` base path from `GITHUB_REPOSITORY`, which is what the old `audi2654.github.io/adityapanchal/` address used. Locally, with neither set, it defaults to `https://adityapanchal.github.io` for canonical links.
 
 ## Structure
 
@@ -62,7 +62,6 @@ src/
   layouts/       Shared document and article layouts
   pages/         Static and generated routes
     intersections/  Hub page plus Short thoughts, Books, Films, and Randoms
-    homelab.astro   Unlisted redirect to a private dashboard; noindex, no sitemap entry
   styles/        Global typographic system
   utils/         Reading-time, date, taxonomy, and navigation helpers
 public/          Static assets and crawl directives

@@ -4,16 +4,16 @@ Project details and handoff notes
 
 ## Status
 
-The site is built, deployed, and live at `https://audi2654.github.io/adityapanchal/`. Deployment via GitHub Actions works. There is no unfinished feature request; what remains is personalization, browser QA of the theme toggle, and two deferred dependency advisories — all listed under "Next-session focus".
+The site is built, deployed, and live at **`https://adityapanchal.is-a.dev/`**. Deployment via GitHub Actions works. There is no unfinished feature request; what remains is personalization, browser QA of the theme toggle, and two deferred dependency advisories — all listed under "Next-session focus".
 
-The most recent structural work is described under "UI session: dashes, theme toggle, Intersections". Read that before changing the theme CSS or the Intersections routes.
+The most recent work is the custom-domain move — read "Custom domain move" below before touching `SITE_URL`, `BASE_PATH`, or `astro.config.mjs`. For the theme CSS or the Intersections routes, read "UI session: dashes, theme toggle, Intersections" first.
 
 ### Commit authorship rules for this repository
 
 - **Never add a `Co-Authored-By: Claude ...` trailer.** The owner wants the history to read as solely theirs and will add attribution themselves if ever wanted.
 - **Commit as `audi2654 <36697715+audi2654@users.noreply.github.com>`.** A repo-local `user.name` / `user.email` is now set to enforce this, so plain `git commit` is correct — do not override it with `--author` or env vars. The machine's *global* identity is `apanchal <aditya.panchal@accelya.com>` (a work account), which is wrong for this personal project and was the source of an earlier mistake.
 
-The `origin` remote is `https://github.com/audi2654/adityapanchal.git`, so this deploys as a **project site** at `https://audi2654.github.io/adityapanchal/` — not the `adityapanchal.github.io` user site assumed by the placeholder values in [`src/config.ts`](../src/config.ts). The build derives the correct URL and base path from `GITHUB_REPOSITORY` at build time, so this mismatch does not break the deployment; it only affects the hardcoded local-development fallback.
+The `origin` remote is `https://github.com/audi2654/adityapanchal.git`. It deployed as a **project site** at `https://audi2654.github.io/adityapanchal/` until 13 August 2026, when a custom domain replaced that — see "Custom domain move" below. The placeholder values in [`src/config.ts`](../src/config.ts) still name a nonexistent `adityapanchal` account; the deploy passes `SITE_URL`, which wins, so this affects only the local-development fallback and the footer's GitHub link.
 
 ## What was done
 
@@ -52,7 +52,7 @@ Do not repeat implementation details already documented in [README.md](../README
 
 ### Maintenance session (2026-08-09, later)
 
-- **The deployment is live and confirmed working** at `https://audi2654.github.io/adityapanchal/`. The owner set the Pages source to GitHub Actions; the workflow fix plus that setting resolved the failure.
+- **The deployment is live and confirmed working**, at `https://audi2654.github.io/adityapanchal/` as of this session (since moved to a custom domain — see "Custom domain move"). The owner set the Pages source to GitHub Actions; the workflow fix plus that setting resolved the failure.
 - Renamed `temp/` to `project-dets/` with `git mv`, preserving history. `handoff-doc.md` was carried over unchanged.
 - Added [`how-to-customize.md`](how-to-customize.md) in this folder — an owner-facing guide to writing posts, adding images, adding pages, avoiding Node/package drift, the six content types, and long-horizon maintenance. **Keep it current when structure changes**; it is the owner's primary reference.
 - Added `.prose img`, `.prose figure`, and `.prose figcaption` rules to [`src/styles/global.css`](../src/styles/global.css). No image styling existed before, so any in-post image wider than the text column would have overflowed on narrow screens. Verified by building a throwaway MDX post using both `![](...)` and the `<Image />` component: both emit hashed, base-path-correct `<img>` tags with intrinsic dimensions. The throwaway files were deleted.
@@ -96,34 +96,45 @@ Also fixed along the way: `.eyebrow a` had `color: inherit` with no other afford
 
 **Not verified:** the toggle has never been exercised in a real browser. The `browser:control-in-app-browser` skill suggested at the bottom of this document **does not exist in the current environment** — invoking it fails with `Unknown skill`. All QA was static inspection of `dist`. A future session with browser tooling should confirm the toggle click, the no-flash behaviour on reload, keyboard focus, and layout at mobile widths.
 
-### Unlisted homelab redirect (2026-08-09, later again)
+### Homelab redirect: added, then removed (2026-08-09 → 2026-08-13)
 
-The owner runs self-hosted OSS apps via Coolify on their own VPS and wanted a personal shortcut to it from this site — reachable by typing the URL, invisible to everyone else.
+**Current state: gone. Do not re-add it.** The owner set up a dedicated subdomain for the Coolify dashboard instead, which is the better answer — a real host with its own address, rather than a public page on a writing site pointing at a bare IP.
 
-[`src/pages/homelab.astro`](../src/pages/homelab.astro) is published at `/adityapanchal/homelab/` and redirects to `http://140.245.18.238:8000` with a `<meta http-equiv="refresh">`. A meta refresh rather than a script, so it works with scripting disabled; the destination is also a plain link on the page as a fallback.
+Briefly, `src/pages/homelab.astro` existed at `/homelab/` and meta-refreshed to the dashboard's `http://<vps-ip>:8000`. It was removed in full: the page file, the `sitemap()` filter that excluded it, and every mention in [README.md](../README.md) and [how-to-customize.md](how-to-customize.md), the IP included. Note that **git history retains that address permanently** — it is public-facing rather than secret, so this was accepted rather than rewritten, but it is still recoverable from `git log`.
 
-Three mechanisms keep it out of search results, and all three matter:
+Two things were deliberately kept, because they are general-purpose and cost nothing:
 
-1. **`noindex` prop, new on `BaseLayout` → `SiteHead`.** Emits `noindex, nofollow, noarchive, nosnippet, noimageindex` instead of the default `index, follow`. This is the only one of the three that a crawler is obliged to honour once it has the URL.
-2. **Sitemap exclusion** via a `filter` on the `sitemap()` integration in [`astro.config.mjs`](../astro.config.mjs). A sitemap entry is an active request to crawl a URL, so it would defeat the point. **Any future page that sets `noindex` must be added to that filter too** — the two are coupled and nothing enforces it automatically. Verified: 23 sitemap entries for 25 built pages.
-3. **No inbound link anywhere.** Not in `navigation`, not in `intersectionSections`, not referenced by any other page. Verified by grepping all of `dist` for `homelab` outside `dist/homelab/`: zero hits. Crawlers find pages by following links; with none, discovery depends on someone typing the path.
+- **The `noindex` prop** on [`BaseLayout`](../src/layouts/BaseLayout.astro) → [`SiteHead`](../src/components/SiteHead.astro). Passing it emits `noindex, nofollow, noarchive, nosnippet, noimageindex` in place of the default `index, follow`. No page uses it now; it works if one ever needs to.
+- **The reasoning about unlisted pages**, preserved in section 3 of [how-to-customize.md](how-to-customize.md). The parts worth not rediscovering: a `noindex` page must *also* be dropped from the sitemap, since a sitemap entry is an active request to crawl a URL; and a `robots.txt` `Disallow` is worse than silence, because that file is world-readable so the rule advertises the path, and a crawler that obeys the disallow never fetches the page and so never reads the `noindex`. `sitemap()` now takes no filter — add one alongside any future `noindex`.
 
-**Deliberately *not* in `robots.txt`.** That file is world-readable at a well-known path, so a `Disallow: /homelab/` line would advertise the exact URL to anyone curious — and worse, a compliant crawler that obeys the disallow never fetches the page, so it never reads the `noindex` tag and the URL can still surface in results as a bare link. Letting the page be fetched and self-suppress is the stronger arrangement. Do not "improve" this by adding a robots.txt rule.
+The wider lesson, if this comes up again: a static site on GitHub Pages cannot authenticate anyone, so "unlisted" is the strongest thing it can offer and that is not the same as private. Infrastructure that needs protecting belongs behind its own login on its own host, which is where it now is.
 
-**This is unlisted, not private.** A static site on GitHub Pages cannot authenticate anyone: the HTML is public to whoever knows the path, and it names the server's IP. Obscurity is the only barrier — the actual security boundary is Coolify's own login. If the VPS should not be publicly reachable at all, that belongs in the VPS firewall or a VPN, not here.
+### Custom domain move (2026-08-13)
 
-The owner corrected the target to port `8000` immediately after the first commit — Coolify's default listening port — so the working address is `http://140.245.18.238:8000`. If it moves again, the `dashboard` constant at the top of `homelab.astro` is the only place to edit.
+The owner moved the site to **`https://adityapanchal.is-a.dev/`**, committed by them directly in `d536289` ("Add env var & mapping to a domain"). The change is three lines in [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml) — an `env:` block on the `Build site` step:
 
-**Unverified:** whether that address actually serves the Coolify login. Probing it from this machine is useless — a Zscaler corporate proxy intercepts the request (`307` to `gateway.zscaler.net` on port 80, `403` on 443), so the real response can never be observed from here. Any future session on this machine should assume the same and rely on the owner to confirm. **The login is served over plain `http`, so credentials cross the network in cleartext** — putting a domain and a Let's Encrypt certificate in front of it (Coolify supports this natively) is worth doing, after which the URL here needs updating to `https` and the `:8000` port likely disappears.
+```yaml
+env:
+  SITE_URL: https://adityapanchal.is-a.dev
+  BASE_PATH: /
+```
+
+**Both variables are required, and they must move together.** A custom domain serves from the root, whereas the old project-site address served from `/adityapanchal/`. Setting `SITE_URL` alone would leave every internal link prefixed with `/adityapanchal/` on a domain where that path does not exist — the site would load and every link would 404. `astro.config.mjs` needed no change: it already reads both variables and only falls back to deriving them from `GITHUB_REPOSITORY` when they are absent.
+
+**Verified live, 13 August 2026:** `https://adityapanchal.is-a.dev/` returns `200`, and `https://audi2654.github.io/adityapanchal/` returns `301` to it, so GitHub is redirecting the old address and previously shared links still work. A local build with both variables set produces root-relative links (`href="/about/"`), a correct canonical (`https://adityapanchal.is-a.dev/`), matching `rss.xml` links, and `Sitemap: https://adityapanchal.is-a.dev/sitemap-index.xml` in `robots.txt`.
+
+**Local-build trap on Windows, worth knowing.** Running `BASE_PATH=/ npm run build` in Git Bash silently produced a base path of `/C:/Program Files/Git/` — MSYS rewrites a lone `/` argument into a Windows path, so every URL in `dist` was corrupted. It looks exactly like a code defect and is not one; Linux CI is unaffected. Prefix the command with `MSYS_NO_PATHCONV=1 MSYS2_ARG_CONV_EXCL='*'` when reproducing a root-base build locally.
+
+**`is-a.dev` is a free community subdomain, not an owned domain.** It behaves like a real address but cannot be transferred or sold, and it outlives the project only as long as that registry does. Fine for now; a paid domain is the durable version for the owner's stated 20–30 year horizon. Any future move is again just those two workflow values.
 
 ## Important implementation decisions
 
 - Internal links use [`src/utils/url.ts`](../src/utils/url.ts), which prefixes Astro's configured base path. Preserve this helper for any new internal route so both user sites and GitHub Pages project sites work.
-- Deployment metadata is derived from `GITHUB_REPOSITORY`; `SITE_URL` can override the public canonical URL for a custom domain. See [`astro.config.mjs`](../astro.config.mjs) and the deployment notes in [README.md](../README.md).
+- Deployment metadata is derived from `GITHUB_REPOSITORY` only as a fallback. In practice `SITE_URL` and `BASE_PATH` are both set in the deploy workflow and take precedence — see "Custom domain move" above, [`astro.config.mjs`](../astro.config.mjs), and the deployment notes in [README.md](../README.md).
 - `robots.txt` is generated by [`src/pages/robots.txt.ts`](../src/pages/robots.txt.ts), not stored in `public`, so its sitemap URL always matches the build configuration.
 - Content schemas use `z` from `astro/zod`, which is the non-deprecated Astro 7 path. Do not change it back to the legacy `astro:content` export.
 - The design uses **no framework hydration and no client bundle**. The one exception is the theme toggle, added 9 August 2026: two `is:inline` scripts totalling a few dozen lines. Keep it that way — do not introduce a framework island for interactivity.
-- Keeping a page out of search results takes **two** coordinated changes: `noindex` on `BaseLayout`, *and* an entry in the `sitemap()` filter in [`astro.config.mjs`](../astro.config.mjs). Doing only the first submits the URL to search engines while asking them to ignore it.
+- Keeping a page out of search results takes **two** coordinated changes: `noindex` on `BaseLayout`, *and* a `filter` on `sitemap()` in [`astro.config.mjs`](../astro.config.mjs) that drops it. Doing only the first submits the URL to search engines while asking them to ignore it. Nothing enforces the pairing. No page needs this today — `sitemap()` takes no filter — but the `noindex` prop is still wired up.
 - Theme resolution order: an explicit `data-theme` on `<html>` (set by the toggle, persisted in `localStorage`) always beats `prefers-color-scheme`. That is why the dark media query in [`src/styles/global.css`](../src/styles/global.css) is written as `:root:not([data-theme='light'])`. Changing that selector shape will break the override.
 
 ## Verification completed
@@ -145,16 +156,16 @@ The previously blocking Pages **Source → GitHub Actions** setting has been don
 
 Personalization and polish:
 
-1. Replace the sample bio, recommendations, projects, and writing with the owner’s real material in [`src/config.ts`](../src/config.ts), [`src/pages/`](../src/pages), and [`src/content/writing/`](../src/content/writing/). Note that `site.url` and `site.github` there still point at `adityapanchal`, while the actual remote is `audi2654` — reconcile these when the real domain is decided.
-2. Confirm the desired public domain and GitHub repository name, then update `SITE_URL` through GitHub Actions variables if a custom domain is used.
+1. Replace the sample bio, recommendations, projects, and writing with the owner’s real material in [`src/config.ts`](../src/config.ts), [`src/pages/`](../src/pages), and [`src/content/writing/`](../src/content/writing/).
+2. **Fix `site.github` in [`src/config.ts`](../src/config.ts)** — it reads `https://github.com/adityapanchal`, an account that is not the owner's, and it is a live link in the footer and on the About page. `site.url` there is also stale (`https://adityapanchal.github.io`) but harmless, since `SITE_URL` overrides it in the build; worth aligning to `https://adityapanchal.is-a.dev` anyway so local builds match production. The `projects` array has the same wrong-account URL.
 3. Resolve the 2 high-severity production advisories noted under Verification. `npm audit fix` has been offered twice and **not authorized** — ask before running it.
 4. Browser QA of the theme toggle, which has never run. See "Not verified" in the UI session notes above.
 5. The seeded sample content under Intersections (three books, three films, three randoms, the thoughts list) is still placeholder material written by an agent, not the owner's own. Replace it.
-6. Confirm `/homelab/` reaches the Coolify login, and move it to `https` if it is currently plain `http`. See "Unlisted homelab redirect" above.
+6. Consider a paid domain rather than the free `is-a.dev` subdomain, given the decades-long horizon. Not urgent, but each move strands inbound links, so earlier is cheaper.
 
 ## Suggested skills
 
 - `browser:control-in-app-browser` — **unavailable as of 2026-08-09**; invoking it returns `Unknown skill`. It would be the right tool for visual QA of the locally served site, keyboard navigation, responsive layout, and rendered metadata. Check whether it exists before planning around it; otherwise fall back to inspecting `dist` directly.
 - `openai-docs` — not normally needed; only invoke if a future request involves OpenAI products or APIs.
 
-No sensitive credentials, keys, or private user data were introduced or encountered. The one piece of infrastructure detail now in the repository is the VPS IP address in [`src/pages/homelab.astro`](../src/pages/homelab.astro), committed knowingly — it is a public-facing address, not a secret, and git will retain it permanently.
+No sensitive credentials, keys, or private user data were introduced or encountered. The working tree contains no infrastructure details: the one that existed, a VPS IP address in the since-deleted `src/pages/homelab.astro`, was committed knowingly as a public-facing address rather than a secret. It remains in git history and was not rewritten out.
