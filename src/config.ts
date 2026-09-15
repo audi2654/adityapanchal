@@ -95,12 +95,12 @@ export const randoms: readonly {
   noteLink?: { match: string; href: string };
 }[] = [
   {
-    label: 'Quote',
+    label: 'Noticed',
     note: 'Specialist < Generalist < Liminist',
     noteLink: { match: 'Liminist', href: '/writing/the-liminist/' }
   },
   {
-    label: 'Quote',
+    label: 'Noticed',
     note: 'Fulfilment > Satisfaction > Happiness',
     lines: [
       'Fulfilment — internal validation.',
