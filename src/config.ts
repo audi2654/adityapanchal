@@ -75,9 +75,16 @@ export const books = [
 /*
   Randoms: the catch-all under Intersections. Anything that doesn't deserve a
   post and isn't a book, film, or one-line thought — a link, an image caption, a
-  quote, an observation. `note` is required; `label`, `url`, and `lines` are
-  optional. Give `lines` to hang follow-on lines under the note — the note then
-  reads as the headline and the lines as its gloss.
+  quote, an observation. `note` is required; everything else is optional:
+
+    lines     Follow-on lines hung under the note, which then reads as the
+              headline and the lines as its gloss.
+    url       Turns the *whole* note into one link. External only.
+    noteLink  Turns a single word *inside* the note into a link. `match` must
+              appear in `note`; the build fails loudly if it doesn't. `href` may
+              point anywhere — a path like '/writing/x/' is treated as a page on
+              this site, a full 'https://…' as somewhere else.
+
   Newest first; the page does not sort for you.
 */
 export const randoms: readonly {
@@ -85,7 +92,13 @@ export const randoms: readonly {
   note: string;
   url?: string;
   lines?: readonly string[];
+  noteLink?: { match: string; href: string };
 }[] = [
+  {
+    label: 'Quote',
+    note: 'Specialist < Generalist < Liminist',
+    noteLink: { match: 'Liminist', href: '/writing/the-liminist/' }
+  },
   {
     label: 'Quote',
     note: 'Fulfilment > Satisfaction > Happiness',

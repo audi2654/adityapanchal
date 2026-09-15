@@ -2,6 +2,37 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { randoms } from '../../config';
 import { internalUrl } from '../../utils/url';
+
+/*
+  A note renders as a run of plain strings and links. `url` makes the whole note
+  one link; `noteLink` makes one word inside it a link. Resolving both to the
+  same shape here keeps the markup below a single straight render.
+*/
+type Segment = string | { text: string; href: string; external: boolean };
+
+/* A scheme (https:, mailto:) or a protocol-relative // means someone else's site. */
+const isExternal = (href: string) => /^([a-z][a-z0-9+.-]*:|\/\/)/i.test(href);
+
+function linkTo(text: string, href: string): Segment {
+  const external = isExternal(href);
+  /* Our own paths go through internalUrl so they survive a project-site base path. */
+  return { text, href: external ? href : internalUrl(href), external };
+}
+
+function toSegments(item: (typeof randoms)[number]): Segment[] {
+  if (item.url) return [linkTo(item.note, item.url)];
+  if (!item.noteLink) return [item.note];
+
+  const { match, href } = item.noteLink;
+  const at = item.note.indexOf(match);
+  /* Fail the build rather than quietly shipping an entry that lost its link. */
+  if (at === -1) {
+    throw new Error(`Randoms: noteLink.match "${match}" does not appear in the note "${item.note}".`);
+  }
+  return [item.note.slice(0, at), linkTo(match, href), item.note.slice(at + match.length)];
+}
+
+const entries = randoms.map((item) => ({ ...item, segments: toSegments(item) }));
 ---
 
 <BaseLayout title="Randoms" description="Odds and ends that did not fit anywhere else.">
@@ -11,12 +42,16 @@ import { internalUrl } from '../../utils/url';
     <p>Quotes, links, and stray observations that did not fit anywhere else.</p>
   </header>
   <ul class="random-list">
-    {randoms.map((item) => (
+    {entries.map((item) => (
       <li>
         <article>
           {item.label && <p class="random-list__label">{item.label}</p>}
           <p class:list={[item.lines && 'random-list__lead']}>
-            {item.url ? <a href={item.url} rel="external">{item.note}</a> : item.note}
+            {item.segments.map((segment) =>
+              typeof segment === 'string'
+                ? segment
+                : <a href={segment.href} rel={segment.external ? 'external' : undefined}>{segment.text}</a>
+            )}
           </p>
           {item.lines && (
             <div class="random-list__lines">
