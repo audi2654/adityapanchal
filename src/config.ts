@@ -75,10 +75,26 @@ export const books = [
 /*
   Randoms: the catch-all under Intersections. Anything that doesn't deserve a
   post and isn't a book, film, or one-line thought — a link, an image caption, a
-  quote, an observation. `note` is required; `label` and `url` are optional.
+  quote, an observation. `note` is required; `label`, `url`, and `lines` are
+  optional. Give `lines` to hang follow-on lines under the note — the note then
+  reads as the headline and the lines as its gloss.
   Newest first; the page does not sort for you.
 */
-export const randoms: readonly { label?: string; note: string; url?: string }[] = [
+export const randoms: readonly {
+  label?: string;
+  note: string;
+  url?: string;
+  lines?: readonly string[];
+}[] = [
+  {
+    label: 'Quote',
+    note: 'Fulfilment > Satisfaction > Happiness',
+    lines: [
+      'Fulfilment — internal validation.',
+      'Satisfaction — a combination of both, in shifting proportion.',
+      'Happiness — usually linked to something external, though not always. And always a short-lived state: ephemeral, fading, fleeting.'
+    ]
+  },
   {
     label: 'Quote',
     note: '“The purpose of a system is what it does, not what it was built to do.”'

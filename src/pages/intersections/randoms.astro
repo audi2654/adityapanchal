@@ -15,7 +15,14 @@ import { internalUrl } from '../../utils/url';
       <li>
         <article>
           {item.label && <p class="random-list__label">{item.label}</p>}
-          <p>{item.url ? <a href={item.url} rel="external">{item.note}</a> : item.note}</p>
+          <p class:list={[item.lines && 'random-list__lead']}>
+            {item.url ? <a href={item.url} rel="external">{item.note}</a> : item.note}
+          </p>
+          {item.lines && (
+            <div class="random-list__lines">
+              {item.lines.map((line) => <p>{line}</p>)}
+            </div>
+          )}
         </article>
       </li>
     ))}

@@ -242,7 +242,8 @@ Seven kinds. The important split: **one is a real content collection; the rest a
 ### Randoms — the catch-all
 
 - **Where:** the `randoms` array in [`src/config.ts`](../src/config.ts), shown at [`src/pages/intersections/randoms.astro`](../src/pages/intersections/randoms.astro)
-- **How:** add an entry at the top. Only `note` is required; `label` (a short uppercase tag like `Quote` or `Link`) and `url` are optional — supply `url` and the note becomes a link.
+- **How:** add an entry at the top. Only `note` is required; `label` (a short uppercase tag like `Quote` or `Link`), `url`, and `lines` are optional — supply `url` and the note becomes a link.
+- **Multi-line entries:** give `lines: ['…', '…']` and the `note` renders as a headline with those lines beneath it in a ruled, muted block. Use it for a short hierarchy or a term-and-gloss list. Anything longer than about five lines wants to be a post instead — a wall of text breaks the scan rhythm of this page.
 - For anything that isn't a post, a book, a film, or a one-line thought.
 
 ### Books, films, projects — curated lists

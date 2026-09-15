@@ -130,6 +130,10 @@ p { margin: 1.25rem 0; }
 .random-list > li:first-child { padding-top: 0; }
 .random-list p { margin: 0; line-height: 1.6; }
 .random-list__label { margin-bottom: 0.45rem !important; color: var(--muted); font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; }
+/* A note with `lines` under it: the note becomes the headline, lines the gloss. */
+.random-list__lead { font-size: 1.14rem; font-weight: 650; letter-spacing: -0.012em; }
+.random-list__lines { display: grid; gap: 0.4rem; margin-top: 0.7rem; border-left: 1px solid var(--rule); padding-left: 1rem; }
+.random-list__lines p { color: var(--muted); font-size: 0.96rem; }
 .writing-list > li { padding-block: 1.65rem; border-bottom: 1px solid var(--rule); }
 .writing-list > li:first-child { padding-top: 1.1rem; }
 .writing-list__heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1.25rem; }
