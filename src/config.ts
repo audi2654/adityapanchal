@@ -96,6 +96,10 @@ export const randoms: readonly {
 }[] = [
   {
     label: 'Noticed',
+    note: 'The roots of old habits run deep & wide! Uproot yourself from both external & internal environments to break them.'
+  },
+  {
+    label: 'Noticed',
     note: 'Specialist < Generalist < Liminist',
     noteLink: { match: 'Liminist', href: '/writing/the-liminist/' }
   },
